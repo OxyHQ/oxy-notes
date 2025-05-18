@@ -1,0 +1,6 @@
+{
+    "name": "@oxyhq/services",
+    "version": "0.0.1",
+    "main": "../../../OxyHQServices/lib/commonjs/index",
+    "module": "../../../OxyHQServices/lib/module/index"
+}
