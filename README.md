@@ -1,8 +1,9 @@
-# Welcome to your Expo app 👋
+# Oxy Stack
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Oxy Stack** is the foundational app of the Oxy ecosystem — a unified base that integrates all core services, UI components, and SDK functions from [`@oxyhq/services`](https://www.npmjs.com/package/@oxyhq/services).  
+Use this app as a starting point to explore, test, and build with the full Oxy stack.
 
-## Get started
+## 🚀 Get started
 
 1. Install dependencies
 
@@ -16,35 +17,41 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+Then choose how to run it:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [Expo Go](https://expo.dev/go)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📁 Project structure
 
-## Get a fresh project
+Start editing files in the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction) with [`expo-router`](https://expo.github.io/router/docs).
 
-When you're ready, run:
+## 🔄 Reset the app
+
+To start fresh and move the example code aside:
 
 ```bash
 npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+This will archive the starter code into `app-example/` and create a clean `app/` directory.
 
-## Learn more
+## 📚 Learn more
 
-To learn more about developing your project with Expo, look at the following resources:
+- [Expo documentation](https://docs.expo.dev/)
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/)
+- [Oxy website](https://oxy.so)
+- [`@oxyhq/services` on npm](https://www.npmjs.com/package/@oxyhq/services)
+- [Oxy Stack on GitHub](https://github.com/OxyHQ/oxy-stack)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 🤝 Join the community
 
-## Join the community
+- [Expo GitHub](https://github.com/expo/expo)
+- [Expo Discord](https://chat.expo.dev)
+- [Oxy Newsroom](https://oxy.so/newsroom/)
 
-Join our community of developers creating universal apps.
+---
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Made with ❤️ by the Oxy team.
