@@ -29,7 +29,7 @@ interface UserSearchResult {
 }
 
 export default function SearchScreen() {
-    const { user, isAuthenticated, oxyServices } = useOxy();
+    const { user, isAuthenticated, oxyServices, showBottomSheet } = useOxy();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<UserSearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -141,7 +141,7 @@ export default function SearchScreen() {
                 throw new Error('Valid user ID is required to view profile');
             }
 
-            // First find the user in our results to get the username
+            // First find the user in our results
             const userToView = searchResults.find(u => u.id === userId);
             console.log('Found user to view:', userToView);
 
@@ -149,15 +149,8 @@ export default function SearchScreen() {
                 throw new Error('User not found in search results');
             }
 
-            if (!userToView.username) {
-                throw new Error('Username is missing');
-            }
-
-            // Navigate to profile screen with username as parameter
-            router.push({
-                pathname: '/profile',
-                params: { username: userToView.username }
-            });
+            // Navigate to profile screen with id as parameter
+            showBottomSheet?.({ screen: 'Profile', props: { userId: userToView.id } });
 
         } catch (err: any) {
             console.error('Error handling profile view:', err);

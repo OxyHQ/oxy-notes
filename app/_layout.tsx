@@ -4,7 +4,7 @@ import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View } f
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 // Note: This import would work in a real project where the package is installed via npm.
 // For development/testing, you might need to use relative imports instead.
-import { OxyLogo, OxyProvider, OxyServices, OxySignInButton, useOxy } from '@oxyhq/services';
+import { OxyLogo, OxyProvider, OxyServices, OxySignInButton, useOxy } from '@oxyhq/services/full';
 import { Slot } from 'expo-router';
 
 /**
@@ -26,7 +26,7 @@ import { Slot } from 'expo-router';
 export default function App() {
   // Initialize OxyServices
   const oxyServices = new OxyServices({
-    baseURL: 'https://api.oxy.so',
+    baseURL: 'http://localhost:3001',
   });
 
   // Create a SessionManager wrapper component
@@ -35,7 +35,7 @@ export default function App() {
     const [isLoading, setIsLoading] = useState(true);
 
     // Use the OxyContext to access authentication state
-    const { user, isAuthenticated, isLoading: authLoading } = useOxy();
+    const { user, isAuthenticated, isLoading: authLoading, showBottomSheet } = useOxy();
 
     // Update UI after auth state is loaded
     useEffect(() => {

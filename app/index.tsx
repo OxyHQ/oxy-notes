@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { OxySignInButton, useOxy } from '@oxyhq/services';
+import { OxySignInButton, useOxy } from '@oxyhq/services/full';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useRef } from 'react';
@@ -37,7 +37,7 @@ const UserInfo = () => {
 };
 
 export default function Index() {
-  const { isAuthenticated, user } = useOxy();
+  const { isAuthenticated, user, showBottomSheet } = useOxy();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -127,15 +127,34 @@ export default function Index() {
             style={{ marginTop: 10 }}
             text="Continue with Oxy"
           />
+
+          <Button
+            title="Sign Up"
+            onPress={() => showBottomSheet?.('SignUp')}
+            color="#d169e5"
+          />
+
+          <Button
+            title="Karma Center"
+            onPress={() => showBottomSheet?.('KarmaCenter')}
+            color="#d169e5"
+          />
+
+          <Button
+            title="Profile"
+            onPress={() => showBottomSheet?.({ screen: 'Profile', props: { userId: '67e1771bd4bc596eba772e61' } })}
+            color="#d169e5"
+          />
         </View>
 
         {/* Account Center button for authenticated users */}
         {isAuthenticated && (
           <TouchableOpacity
             style={styles.accountCenterButton}
+            onPress={() => showBottomSheet?.('AccountOverview')}
           >
             <View style={styles.buttonContent}>
-              <Text style={styles.accountCenterButtonText}>Manage Account</Text>
+              <Text style={styles.accountCenterButtonText}>Account Overview</Text>
             </View>
           </TouchableOpacity>
         )}

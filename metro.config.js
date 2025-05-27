@@ -21,7 +21,6 @@ config.resolver.disableHierarchicalLookup = true;
 
 // 4. Extra module resolution for local packages
 config.resolver.extraNodeModules = {
-  '@oxyhq/services': path.resolve(workspaceRoot, 'OxyHQServices'),
 };
 
 module.exports = config;
