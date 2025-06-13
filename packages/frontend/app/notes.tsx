@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useOxy } from '@oxyhq/services';
-import { OxySignInButton } from '@oxyhq/services/full';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 interface Note {
@@ -24,45 +24,56 @@ interface Note {
   userId: string;
 }
 
+const COLORS = [
+  '#ffffff', // White (default)
+  '#f28b82', // Red
+  '#fbbc04', // Yellow
+  '#fff475', // Light Yellow
+  '#ccff90', // Light Green
+  '#a7ffeb', // Teal
+  '#cbf0f8', // Light Blue
+  '#aecbfa', // Blue
+  '#d7aefb', // Purple
+  '#fdcfe8', // Pink
+  '#e6c9a8', // Brown
+  '#e8eaed', // Gray
+];
+
 export default function NotesScreen() {
   const { user, oxyServices, activeSessionId } = useOxy();
   const [notes, setNotes] = useState<Note[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const screenWidth = Dimensions.get('window').width;
+  const numColumns = viewMode === 'grid' ? 2 : 1;
   const itemWidth = viewMode === 'grid' ? (screenWidth - 40) / 2 - 10 : screenWidth - 40;
 
-  const fetchNotes = useCallback(async () => {
+  useEffect(() => {
+    fetchNotes();
+  }, [activeSessionId]);
+
+  const fetchNotes = async () => {
     if (!activeSessionId || !oxyServices) return;
 
+    setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:4000/api/notes', {
+      const response = await oxyServices.makeAuthenticatedRequest('/api/notes', {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${activeSessionId}`,
-        },
       });
 
-      const result = await response.json();
-
-      if (result.success) {
-        setNotes(result.notes || []);
-      } else {
-        console.error('Failed to fetch notes:', result.error);
+      if (response.success) {
+        setNotes(response.notes || []);
       }
     } catch (error) {
       console.error('Error fetching notes:', error);
       Alert.alert('Error', 'Failed to fetch notes');
+    } finally {
+      setIsLoading(false);
     }
-  }, [activeSessionId, oxyServices]);
-
-  useEffect(() => {
-    if (user && activeSessionId) {
-      fetchNotes();
-    }
-  }, [user, activeSessionId, fetchNotes]);
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -113,26 +124,11 @@ export default function NotesScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.authPrompt}>
-          <Text style={styles.authPromptIcon}>�</Text>
+          <Ionicons name="person-circle-outline" size={80} color="#666" />
           <Text style={styles.authPromptTitle}>Welcome to Noted</Text>
           <Text style={styles.authPromptText}>
-            Your personal note-taking app inspired by Google Keep
+            Please sign in to access your notes
           </Text>
-          <Text style={styles.authPromptDescription}>
-            Create, organize, and search through your notes with beautiful colors and simple design.
-          </Text>
-          
-          <OxySignInButton 
-            style={styles.signInButton}
-          />
-          
-          <View style={styles.features}>
-            <Text style={styles.featureItem}>• Create and edit notes</Text>
-            <Text style={styles.featureItem}>• Choose from multiple colors</Text>
-            <Text style={styles.featureItem}>• Search through your notes</Text>
-            <Text style={styles.featureItem}>• Grid and list view modes</Text>
-            <Text style={styles.featureItem}>• Secure authentication</Text>
-          </View>
         </View>
       </View>
     );
@@ -142,29 +138,26 @@ export default function NotesScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.appTitle}>Noted</Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.viewModeButton}
-            onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-          >
-            <Text style={styles.viewModeIcon}>
-              {viewMode === 'grid' ? '☰' : '⊞'}
-            </Text>
-          </TouchableOpacity>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search your notes"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor="#666"
+          />
         </View>
-      </View>
-
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <Text style={styles.searchIcon}>🔍</Text>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search your notes"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholderTextColor="#666"
-        />
+        <TouchableOpacity
+          style={styles.viewModeButton}
+          onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+        >
+          <Ionicons
+            name={viewMode === 'grid' ? 'list' : 'grid'}
+            size={24}
+            color="#666"
+          />
+        </TouchableOpacity>
       </View>
 
       {/* Notes Grid/List */}
@@ -176,7 +169,7 @@ export default function NotesScreen() {
       >
         {filteredNotes.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateIcon}>📝</Text>
+            <Ionicons name="document-text-outline" size={80} color="#ccc" />
             <Text style={styles.emptyStateTitle}>
               {searchQuery ? 'No notes found' : 'No notes yet'}
             </Text>
@@ -198,7 +191,7 @@ export default function NotesScreen() {
 
       {/* Floating Action Button */}
       <TouchableOpacity style={styles.fab} onPress={createNewNote}>
-        <Text style={styles.fabIcon}>+</Text>
+        <Ionicons name="add" size={24} color="#fff" />
       </TouchableOpacity>
     </View>
   );
@@ -212,31 +205,21 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 60,
     paddingBottom: 16,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
-  appTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   searchContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
     borderRadius: 25,
-    marginHorizontal: 16,
-    marginVertical: 12,
     paddingHorizontal: 16,
+    marginRight: 12,
   },
   searchIcon: {
     marginRight: 8,
@@ -324,7 +307,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#ffc107',
+    backgroundColor: '#1976d2',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -350,47 +333,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   authPromptText: {
-    fontSize: 18,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 16,
-    lineHeight: 24,
-  },
-  authPromptDescription: {
     fontSize: 16,
-    color: '#888',
+    color: '#666',
     textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 22,
-    paddingHorizontal: 16,
-  },
-  signInButton: {
-    marginBottom: 32,
-  },
-  features: {
-    alignItems: 'flex-start',
-  },
-  featureItem: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  authPromptIcon: {
-    fontSize: 80,
-    marginBottom: 16,
-  },
-  viewModeIcon: {
-    fontSize: 20,
-    color: '#666',
-  },
-  emptyStateIcon: {
-    fontSize: 80,
-    marginBottom: 16,
-  },
-  fabIcon: {
-    fontSize: 32,
-    color: '#fff',
-    fontWeight: 'bold',
   },
 });

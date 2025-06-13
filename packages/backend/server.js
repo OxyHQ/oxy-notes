@@ -76,6 +76,172 @@ app.get('/api/user/sessions', async (req, res) => {
   }
 });
 
+// In-memory storage for notes (in production, use a real database)
+let notes = [];
+let noteIdCounter = 1;
+
+// Notes endpoints (authenticated)
+
+// Get all notes for the authenticated user
+app.get('/api/notes', async (req, res) => {
+  try {
+    const userId = req.user.id || req.user._id;
+    const userNotes = notes.filter(note => note.userId === userId);
+    
+    res.json({
+      success: true,
+      notes: userNotes,
+      count: userNotes.length
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch notes', 
+      details: error.message 
+    });
+  }
+});
+
+// Get a specific note by ID
+app.get('/api/notes/:id', async (req, res) => {
+  try {
+    const noteId = req.params.id;
+    const userId = req.user.id || req.user._id;
+    
+    const note = notes.find(n => n.id === noteId && n.userId === userId);
+    
+    if (!note) {
+      return res.status(404).json({
+        success: false,
+        error: 'Note not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      note: note
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch note', 
+      details: error.message 
+    });
+  }
+});
+
+// Create a new note
+app.post('/api/notes', async (req, res) => {
+  try {
+    const { title, content, color = '#ffffff' } = req.body;
+    const userId = req.user.id || req.user._id;
+    
+    if (!title && !content) {
+      return res.status(400).json({
+        success: false,
+        error: 'Note must have either a title or content'
+      });
+    }
+    
+    const newNote = {
+      id: String(noteIdCounter++),
+      title: title || '',
+      content: content || '',
+      color: color,
+      userId: userId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    notes.push(newNote);
+    
+    res.json({
+      success: true,
+      note: newNote,
+      message: 'Note created successfully'
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to create note', 
+      details: error.message 
+    });
+  }
+});
+
+// Update an existing note
+app.put('/api/notes/:id', async (req, res) => {
+  try {
+    const noteId = req.params.id;
+    const { title, content, color } = req.body;
+    const userId = req.user.id || req.user._id;
+    
+    const noteIndex = notes.findIndex(n => n.id === noteId && n.userId === userId);
+    
+    if (noteIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: 'Note not found'
+      });
+    }
+    
+    // Update the note
+    const updatedNote = {
+      ...notes[noteIndex],
+      title: title !== undefined ? title : notes[noteIndex].title,
+      content: content !== undefined ? content : notes[noteIndex].content,
+      color: color !== undefined ? color : notes[noteIndex].color,
+      updatedAt: new Date().toISOString()
+    };
+    
+    notes[noteIndex] = updatedNote;
+    
+    res.json({
+      success: true,
+      note: updatedNote,
+      message: 'Note updated successfully'
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to update note', 
+      details: error.message 
+    });
+  }
+});
+
+// Delete a note
+app.delete('/api/notes/:id', async (req, res) => {
+  try {
+    const noteId = req.params.id;
+    const userId = req.user.id || req.user._id;
+    
+    const noteIndex = notes.findIndex(n => n.id === noteId && n.userId === userId);
+    
+    if (noteIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: 'Note not found'
+      });
+    }
+    
+    // Remove the note
+    const deletedNote = notes.splice(noteIndex, 1)[0];
+    
+    res.json({
+      success: true,
+      note: deletedNote,
+      message: 'Note deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to delete note', 
+      details: error.message 
+    });
+  }
+});
+
 app.listen(4000, () => {
   console.log('🚀 Oxy Backend running on port 4000');
   console.log('Features: JWT Authentication with OxyServices');
@@ -83,4 +249,9 @@ app.listen(4000, () => {
   console.log('  GET  /api/health - Health check (public)');
   console.log('  POST /api/messages - Send message (authenticated)');
   console.log('  GET  /api/user/sessions - Get user info (authenticated)');
+  console.log('  GET  /api/notes - Get all notes (authenticated)');
+  console.log('  GET  /api/notes/:id - Get note by ID (authenticated)');
+  console.log('  POST /api/notes - Create note (authenticated)');
+  console.log('  PUT  /api/notes/:id - Update note (authenticated)');
+  console.log('  DELETE /api/notes/:id - Delete note (authenticated)');
 });

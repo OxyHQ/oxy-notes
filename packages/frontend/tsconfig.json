@@ -11,19 +11,19 @@
         "./*"
       ],
       "@oxyhq/services": [
-        "../../../OxyHQServices/src"
+        "../../../OxyServicesandApi/OxyHQServices/src"
       ],
       "@oxyhq/services/*": [
-        "../../../OxyHQServices/src/*"
+        "../../../OxyServicesandApi/OxyHQServices/src/*"
       ],
       "@oxyhq/services/core": [
-        "../../../OxyHQServices/src/core"
+        "../../../OxyServicesandApi/OxyHQServices/src/core"
       ],
       "@oxyhq/services/full": [
-        "../../../OxyHQServices/src"
+        "../../../OxyServicesandApi/OxyHQServices/src"
       ],
       "@oxyhq/services/ui": [
-        "../../../OxyHQServices/src/ui"
+        "../../../OxyServicesandApi/OxyHQServices/src/ui"
       ]
     }
   },
@@ -32,8 +32,8 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "../../../OxyHQServices/src/**/*.ts",
-    "../../../OxyHQServices/src/**/*.tsx"
+    "../../../OxyServicesandApi/OxyHQServices/src/**/*.ts",
+    "../../../OxyServicesandApi/OxyHQServices/src/**/*.tsx"
   ],
   "extends": "expo/tsconfig.base"
 }

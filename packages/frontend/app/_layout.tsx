@@ -1,306 +1,64 @@
-// filepath: /home/nate/OxyServicesandApi/OxyHQServices/examples/BottomSheetExample.tsx
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
-// Note: This import would work in a real project where the package is installed via npm.
-// For development/testing, you might need to use relative imports instead.
-import { OxyLogo, OxyProvider, OxyServices, OxySignInButton, useOxy } from '@oxyhq/services/full';
-import { Slot } from 'expo-router';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { OxyProvider, OxyServices } from '@oxyhq/services';
 
-/**
- * Example demonstrating how to use the OxyProvider component
- * with the internal bottom sheet management
- * 
- * The OxyProvider component now manages the bottom sheet internally:
- * - No need for external ref
- * - No need to install @gorhom/bottom-sheet as a peer dependency
- * - Bottom sheet control is available via useOxy() context methods:
- *   - showBottomSheet(screen?): Opens the bottom sheet and optionally navigates to a screen
- *   - hideBottomSheet(): Closes the bottom sheet
- * 
- * This example also demonstrates session management using OxyContext:
- * - The OxyProvider maintains authentication state
- * - Session data is persisted between app launches
- * - All children of OxyProvider can access auth data via useOxy() hook
- */
-export default function App() {
-  // Initialize OxyServices
-  const oxyServices = new OxyServices({
-    baseURL: 'http://localhost:3001',
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
+
+export default function RootLayout() {
+  const [loaded] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    Phudu: require('../assets/fonts/Phudu-VariableFont_wght.ttf'),
   });
 
-  // Create a SessionManager wrapper component
-  const SessionManager = ({ children }: { children: React.ReactNode }) => {
-    // State to track loading state
-    const [isLoading, setIsLoading] = useState(true);
-
-    // Use the OxyContext to access authentication state
-    const { user, isAuthenticated, isLoading: authLoading, showBottomSheet } = useOxy();
-
-    // Update UI after auth state is loaded
-    useEffect(() => {
-      if (!authLoading) {
-        setIsLoading(false);
-      }
-    }, [authLoading]);
-
-    if (isLoading) {
-      return (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#d169e5" />
-          <Text style={styles.loadingText}>Loading session...</Text>
-        </View>
-      );
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
     }
+  }, [loaded]);
 
-    return <>{children}</>;
-  };
+  if (!loaded) {
+    return null;
+  }
 
-  // Enhanced component to show authenticated user info from OxyContext
-  const UserInfo = () => {
-    // Get all relevant user data and functions from OxyContext
-    const { user, logout, isAuthenticated, error } = useOxy();
-
-    const handleLogout = async () => {
-      try {
-        await logout();
-        console.log('User logged out successfully via OxyContext');
-      } catch (error) {
-        console.error('Logout failed:', error);
-      }
-    };
-
-    if (!user || !isAuthenticated) return null;
-
-    return (
-      <View style={styles.welcomeContainer}>
-        <Text style={styles.welcomeText}>Welcome, {user.username}!</Text>
-        <Text style={styles.sessionText}>User ID: {user.id}</Text>
-        {user.email && <Text style={styles.sessionText}>Email: {user.email}</Text>}
-        <Text style={styles.sessionInfoText}>Session maintained via OxyContext</Text>
-        {error && <Text style={styles.errorText}>Error: {error}</Text>}
-        <Button title="Logout" onPress={handleLogout} />
-      </View>
-    );
-  };
-
-  // Component to conditionally show the login button
-  const LoginButton = () => {
-    const { user, showBottomSheet } = useOxy();
-
-    if (user) return null;
-
-    return <Button title="Sign In / Sign Up" onPress={() => showBottomSheet?.('SignIn')} />;
-  };
-
-  // Component to conditionally show the Account Center button
-  const AccountCenterButton = () => {
-    const { user, showBottomSheet } = useOxy();
-
-    if (!user) return null;
-
-    return (
-      <TouchableOpacity
-        style={styles.accountCenterButton}
-        onPress={() => showBottomSheet?.('AccountCenter')}
-      >
-        <View style={styles.buttonContent}>
-          <OxyLogo
-            width={20}
-            height={20}
-            fillColor="white"
-            secondaryFillColor="rgba(209,105,229,1.00)"
-          />
-          <Text style={styles.accountCenterButtonText}>Manage Account</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  // Handle user authentication - no hooks here
-  const handleAuthenticated = (user: any) => {
-    console.log('User authenticated:', user);
-    // We'll just log the authentication event here
-    // The bottom sheet will be closed by the OxyProvider internally
-  };
+  // Initialize OxyServices
+  const oxyServices = new OxyServices({
+    baseURL: Platform.OS === 'web' ? 'https://api.oxy.so' : 'http://10.0.2.2:4000',
+  });
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <OxyProvider
-        oxyServices={oxyServices}
-        initialScreen="SignIn"
-        autoPresent={false} // Don't auto-present, we'll control it with the button
-        onClose={() => console.log('Sheet closed')}
-        onAuthenticated={handleAuthenticated}
-        onAuthStateChange={(user) => console.log('Auth state changed:', user?.username || 'logged out')}
-        storageKeyPrefix="oxy_example" // Prefix for stored auth tokens
-        theme="light"
-      >
-        <ScrollView>
-          <Slot />
-          <SessionManager>
-            <View style={styles.buttonContainer}>
-              {/* Show UserInfo component that uses OxyContext */}
-              <UserInfo />
-
-              {/* Only show login button if not authenticated */}
-              <LoginButton />
-
-              {/* Use the new OxySignInButton component */}
-              <View style={styles.buttonExamples}>
-                <Text style={styles.sectionTitle}>OxySignInButton Examples:</Text>
-
-                {/* Default style */}
-                <OxySignInButton />
-
-                {/* Outlined variant */}
-                <OxySignInButton
-                  variant="outline"
-                  style={{ marginTop: 10 }}
-                />
-
-                {/* Contained variant */}
-                <OxySignInButton
-                  variant="contained"
-                  style={{ marginTop: 10 }}
-                  text="Continue with Oxy"
-                />
-
-                {/* Custom handler example */}
-                <OxySignInButton
-                  style={{ marginTop: 10 }}
-                  text="Custom Handler"
-                  onPress={() => {
-                    console.log('Custom authentication flow');
-                    // We'll use the OxySignInButton's internal handling
-                    // which already uses the context properly
-                  }}
-                />
-
-                {/* Disabled button example */}
-                <OxySignInButton
-                  variant="contained"
-                  style={{ marginTop: 10 }}
-                  text="Disabled Button"
-                  disabled={true}
-                />
-              </View>
-
-              {/* Only show Account Center button if authenticated */}
-              <AccountCenterButton />
-
-              {/* Bottom sheet control buttons */}
-              <ButtonControls />
-            </View>
-          </SessionManager>
-        </ScrollView>
-      </OxyProvider>
-    </GestureHandlerRootView>
+    <OxyProvider 
+      oxyServices={oxyServices}
+      theme="light"
+      onAuthenticated={(user) => console.log('User authenticated:', user)}
+    >
+      <SafeAreaProvider>
+        <View style={styles.container}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="create-note" />
+            <Stack.Screen name="edit-note" />
+          </Stack>
+          
+          <StatusBar style="auto" />
+        </View>
+      </SafeAreaProvider>
+    </OxyProvider>
   );
 }
-
-// Component for bottom sheet control buttons 
-// This is needed to keep the hooks at the component level
-const ButtonControls = () => {
-  const { showBottomSheet, hideBottomSheet } = useOxy();
-
-  return (
-    <View style={styles.controlButtons}>
-      <Button
-        title="Close Sheet"
-        onPress={() => hideBottomSheet?.()}
-      />
-      <Button
-        title="Open Account Center"
-        onPress={() => showBottomSheet?.('AccountCenter')}
-        color="#d169e5"
-      />
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
-  buttonContainer: {
-    margin: 20,
-    marginTop: 50,
-    gap: 10,
-  },
-  controlButtons: {
-    marginTop: 20,
-    gap: 10,
-  },
-  buttonExamples: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#eaeaea',
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#333',
-  },
-  welcomeContainer: {
-    margin: 20,
-    alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-  },
-  welcomeText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  sessionText: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 5,
-  },
-  sessionInfoText: {
-    fontSize: 12,
-    color: '#d169e5',
-    fontStyle: 'italic',
-    marginTop: 10,
-    marginBottom: 15,
-  },
-  errorText: {
-    color: '#D32F2F',
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  accountCenterButton: {
-    backgroundColor: '#d169e5',
-    padding: 14,
-    borderRadius: 35,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  accountCenterButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginLeft: 12,
-  }
 });
