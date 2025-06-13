@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useOxy } from '@oxyhq/services';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { notesApi, Note } from '../utils/api';
 
 export default function SearchScreen() {
@@ -83,7 +84,17 @@ export default function SearchScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.authPrompt}>
-          <Text style={styles.authPromptIcon}>🔍</Text>
+          {(() => {
+            const IconComponent = Ionicons as any;
+            return (
+              <IconComponent
+                name="search"
+                size={80}
+                color="#ccc"
+                style={styles.authPromptIcon}
+              />
+            );
+          })()}
           <Text style={styles.authPromptTitle}>Search Your Notes</Text>
           <Text style={styles.authPromptText}>
             Please sign in to search through your notes
@@ -102,7 +113,17 @@ export default function SearchScreen() {
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
-        <Text style={styles.searchIcon}>🔍</Text>
+        {(() => {
+          const IconComponent = Ionicons as any;
+          return (
+            <IconComponent
+              name="search"
+              size={18}
+              color="#666"
+              style={styles.searchIcon}
+            />
+          );
+        })()}
         <TextInput
           style={styles.searchInput}
           placeholder="Search notes by title or content..."
@@ -116,7 +137,16 @@ export default function SearchScreen() {
             style={styles.clearButton}
             onPress={() => setSearchQuery('')}
           >
-            <Text style={styles.clearIcon}>✕</Text>
+            {(() => {
+              const IconComponent = Ionicons as any;
+              return (
+                <IconComponent
+                  name="close"
+                  size={16}
+                  color="#666"
+                />
+              );
+            })()}
           </TouchableOpacity>
         )}
       </View>
@@ -125,7 +155,17 @@ export default function SearchScreen() {
       <ScrollView style={styles.resultsContainer}>
         {!searchQuery.trim() ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateIcon}>📝</Text>
+            {(() => {
+              const IconComponent = Ionicons as any;
+              return (
+                <IconComponent
+                  name="document-text"
+                  size={80}
+                  color="#ccc"
+                  style={styles.emptyStateIcon}
+                />
+              );
+            })()}
             <Text style={styles.emptyStateTitle}>Start Searching</Text>
             <Text style={styles.emptyStateText}>
               Type in the search bar to find your notes by title or content
@@ -136,7 +176,17 @@ export default function SearchScreen() {
           </View>
         ) : searchResults.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateIcon}>🔍</Text>
+            {(() => {
+              const IconComponent = Ionicons as any;
+              return (
+                <IconComponent
+                  name="search"
+                  size={80}
+                  color="#ccc"
+                  style={styles.emptyStateIcon}
+                />
+              );
+            })()}
             <Text style={styles.emptyStateTitle}>No Results Found</Text>
             <Text style={styles.emptyStateText}>
               No notes match &ldquo;{searchQuery}&rdquo;. Try different keywords.

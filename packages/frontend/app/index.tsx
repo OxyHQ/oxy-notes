@@ -13,6 +13,7 @@ import {
 import { useOxy } from '@oxyhq/services';
 import { OxySignInButton } from '@oxyhq/services/full';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useOfflineNotes } from '../ui/hooks/useOfflineNotes';
 import { StoredNote } from '../utils/storage';
 
@@ -85,7 +86,16 @@ export default function NotesScreen() {
         </Text>
         {note.syncStatus === 'pending' && (
           <View style={styles.syncIndicator}>
-            <Text style={styles.syncText}>⏳</Text>
+            {(() => {
+              const IconComponent = Ionicons as any;
+              return (
+                <IconComponent
+                  name="time"
+                  size={12}
+                  color="#ffc107"
+                />
+              );
+            })()}
           </View>
         )}
       </View>
@@ -102,7 +112,17 @@ export default function NotesScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.welcomeContainer}>
-          <Text style={styles.welcomeIcon}>📝</Text>
+          {(() => {
+            const IconComponent = Ionicons as any;
+            return (
+              <IconComponent
+                name="document-text"
+                size={80}
+                color="#ffc107"
+                style={styles.welcomeIcon}
+              />
+            );
+          })()}
           <Text style={styles.welcomeTitle}>Welcome to Noted</Text>
           <Text style={styles.welcomeSubtitle}>
             Your personal note-taking app with offline sync
@@ -136,16 +156,33 @@ export default function NotesScreen() {
               style={styles.viewToggle}
               onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
             >
-              <Text style={styles.viewToggleText}>
-                {viewMode === 'grid' ? '☰' : '⚏'}
-              </Text>
+              {(() => {
+                const IconComponent = Ionicons as any;
+                return (
+                  <IconComponent
+                    name={viewMode === 'grid' ? 'list' : 'grid'}
+                    size={20}
+                    color="#666"
+                  />
+                );
+              })()}
             </TouchableOpacity>
           </View>
         </View>
         
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
+          {(() => {
+            const IconComponent = Ionicons as any;
+            return (
+              <IconComponent
+                name="search"
+                size={16}
+                color="#666"
+                style={styles.searchIcon}
+              />
+            );
+          })()}
           <TextInput
             style={styles.searchInput}
             placeholder="Search notes..."
@@ -155,7 +192,16 @@ export default function NotesScreen() {
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Text style={styles.clearIcon}>✕</Text>
+              {(() => {
+                const IconComponent = Ionicons as any;
+                return (
+                  <IconComponent
+                    name="close"
+                    size={16}
+                    color="#666"
+                  />
+                );
+              })()}
             </TouchableOpacity>
           )}
         </View>
@@ -179,7 +225,17 @@ export default function NotesScreen() {
       >
         {filteredNotes.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>📝</Text>
+            {(() => {
+              const IconComponent = Ionicons as any;
+              return (
+                <IconComponent
+                  name="document-text"
+                  size={80}
+                  color="#ccc"
+                  style={styles.emptyIcon}
+                />
+              );
+            })()}
             <Text style={styles.emptyTitle}>
               {searchQuery ? 'No matching notes' : 'No notes yet'}
             </Text>
