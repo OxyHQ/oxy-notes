@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "strict": true,
     "jsx": "react-jsx",
     "esModuleInterop": true,
@@ -8,6 +9,21 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@oxyhq/services": [
+        "../OxyHQServices/src"
+      ],
+      "@oxyhq/services/*": [
+        "../OxyHQServices/src/*"
+      ],
+      "@oxyhq/services/core": [
+        "../OxyHQServices/src/core"
+      ],
+      "@oxyhq/services/full": [
+        "../OxyHQServices/src"
+      ],
+      "@oxyhq/services/ui": [
+        "../OxyHQServices/src/ui"
       ]
     }
   },
@@ -15,7 +31,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "../OxyHQServices/src/**/*.ts",
+    "../OxyHQServices/src/**/*.tsx"
   ],
   "extends": "expo/tsconfig.base"
 }

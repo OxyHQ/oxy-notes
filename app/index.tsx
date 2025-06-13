@@ -81,6 +81,20 @@ export default function Index() {
           </View>
           <Ionicons name="chevron-forward" size={24} color="#ccc" />
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => router.push('/form')}
+        >
+          <View style={[styles.menuIconContainer, { backgroundColor: '#f39c12' }]}>
+            <Ionicons name="send" size={24} color="#fff" />
+          </View>
+          <View style={styles.menuTextContainer}>
+            <Text style={styles.menuTitle}>Test Form</Text>
+            <Text style={styles.menuDescription}>Send test messages to backend API</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={24} color="#ccc" />
+        </TouchableOpacity>
       </View>
 
       {/* Moved buttonContainer from _layout.tsx */}

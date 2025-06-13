@@ -21,6 +21,13 @@ config.resolver.disableHierarchicalLookup = true;
 
 // 4. Extra module resolution for local packages
 config.resolver.extraNodeModules = {
+  '@oxyhq/services': path.resolve(workspaceRoot, 'OxyHQServices', 'src'),
+  '@oxyhq/services/core': path.resolve(workspaceRoot, 'OxyHQServices', 'src', 'core'),
+  '@oxyhq/services/full': path.resolve(workspaceRoot, 'OxyHQServices', 'src'),
+  '@oxyhq/services/ui': path.resolve(workspaceRoot, 'OxyHQServices', 'src', 'ui'),
 };
+
+// 5. Enable source file watching for better hot reload
+config.resolver.platforms = ['native', 'android', 'ios', 'tsx', 'ts', 'web'];
 
 module.exports = config;
