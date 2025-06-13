@@ -93,7 +93,20 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About Noted</Text>
           <View style={styles.infoCard}>
-            <Text style={styles.appName}>📝 Noted</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+              {(() => {
+                const IconComponent = Ionicons as any;
+                return (
+                  <IconComponent
+                    name="document-text"
+                    size={18}
+                    color="#ffc107"
+                    style={{ marginRight: 8 }}
+                  />
+                );
+              })()}
+              <Text style={styles.appName}>Noted</Text>
+            </View>
             <Text style={styles.appDescription}>
               A simple and elegant note-taking app powered by Oxy services.
               Create, edit, and organize your thoughts seamlessly.
