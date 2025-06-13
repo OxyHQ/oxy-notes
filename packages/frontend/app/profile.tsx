@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useOxy } from '@oxyhq/services';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ProfileScreen() {
   const { user } = useOxy();
@@ -38,7 +39,17 @@ export default function ProfileScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.authPrompt}>
-          <Text style={styles.authPromptIcon}>👤</Text>
+          {(() => {
+            const IconComponent = Ionicons as any;
+            return (
+              <IconComponent
+                name="person"
+                size={80}
+                color="#ccc"
+                style={styles.authPromptIcon}
+              />
+            );
+          })()}
           <Text style={styles.authPromptTitle}>Profile</Text>
           <Text style={styles.authPromptText}>
             Please sign in to view your profile
@@ -59,7 +70,16 @@ export default function ProfileScreen() {
         {/* User Info Card */}
         <View style={styles.userCard}>
           <View style={styles.userIcon}>
-            <Text style={styles.userIconText}>👤</Text>
+            {(() => {
+              const IconComponent = Ionicons as any;
+              return (
+                <IconComponent
+                  name="person"
+                  size={24}
+                  color="#fff"
+                />
+              );
+            })()}
           </View>
           <View style={styles.userInfo}>
             <Text style={styles.userName}>

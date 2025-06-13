@@ -221,9 +221,22 @@ export default function NotesScreen() {
       {/* Sync Status */}
       {syncStatus.status === 'syncing' && (
         <View style={styles.syncStatus}>
-          <Text style={styles.syncStatusText}>
-            🔄 Syncing... {syncStatus.progress || 0}%
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+            {(() => {
+              const IconComponent = Ionicons as any;
+              return (
+                <IconComponent
+                  name="sync"
+                  size={14}
+                  color="#1976d2"
+                  style={{ marginRight: 8 }}
+                />
+              );
+            })()}
+            <Text style={styles.syncStatusText}>
+              Syncing... {syncStatus.progress || 0}%
+            </Text>
+          </View>
         </View>
       )}
 
