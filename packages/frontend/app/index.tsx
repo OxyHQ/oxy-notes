@@ -144,7 +144,18 @@ export default function NotesScreen() {
           <View style={styles.headerActions}>
             {!isOnline && (
               <View style={styles.offlineIndicator}>
-                <Text style={styles.offlineText}>📡 Offline</Text>
+                {(() => {
+                  const IconComponent = Ionicons as any;
+                  return (
+                    <IconComponent
+                      name="cloud-offline"
+                      size={10}
+                      color="#fff"
+                      style={{ marginRight: 4 }}
+                    />
+                  );
+                })()}
+                <Text style={styles.offlineText}>Offline</Text>
               </View>
             )}
             {pendingSyncCount > 0 && (
