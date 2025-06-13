@@ -65,11 +65,16 @@ export default function BottomNavigation() {
           onPress={() => handleTabPress(tab.path)}
           activeOpacity={0.7}
         >
-          {React.createElement(Ionicons, {
-            name: tab.icon as any,
-            size: isActive(tab.path) ? 26 : 24,
-            color: isActive(tab.path) ? '#ffc107' : '#666',
-          })}
+          {(() => {
+            const IconComponent = Ionicons as any;
+            return (
+              <IconComponent
+                name={tab.icon}
+                size={isActive(tab.path) ? 26 : 24}
+                color={isActive(tab.path) ? '#ffc107' : '#666'}
+              />
+            );
+          })()}
           <Text style={[
             styles.label,
             isActive(tab.path) && styles.activeLabel,
