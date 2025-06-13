@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useOxy } from '@oxyhq/services';
 import { router } from 'expo-router';
+import { notesApi } from '../utils/api';
 
 const COLORS = [
   '#ffffff', // White (default)
@@ -48,29 +49,15 @@ export default function CreateNoteScreen() {
 
     setIsSaving(true);
     try {
-      // Use the correct API call method based on your OxyServices implementation
-      const response = await fetch('http://localhost:4000/api/notes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${activeSessionId}`,
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          content: content.trim(),
-          color: selectedColor,
-        }),
-      });
+      const result = await notesApi.createNote({
+        title: title.trim(),
+        content: content.trim(),
+        color: selectedColor,
+      }, activeSessionId);
 
-      const result = await response.json();
-
-      if (result.success) {
-        Alert.alert('Success', 'Note saved successfully', [
-          { text: 'OK', onPress: () => router.back() }
-        ]);
-      } else {
-        Alert.alert('Error', result.message || 'Failed to save note');
-      }
+      Alert.alert('Success', 'Note saved successfully', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
     } catch (error) {
       console.error('Error saving note:', error);
       Alert.alert('Error', 'Failed to save note. Please try again.');

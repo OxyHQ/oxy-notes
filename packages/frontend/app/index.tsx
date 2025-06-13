@@ -13,16 +13,7 @@ import {
 import { useOxy } from '@oxyhq/services';
 import { OxySignInButton } from '@oxyhq/services/full';
 import { router } from 'expo-router';
-
-interface Note {
-  id: string;
-  title: string;
-  content: string;
-  color: string;
-  createdAt: string;
-  updatedAt: string;
-  userId: string;
-}
+import { notesApi, Note } from '../utils/api';
 
 export default function NotesScreen() {
   const { user, oxyServices, activeSessionId } = useOxy();
@@ -38,20 +29,8 @@ export default function NotesScreen() {
     if (!activeSessionId || !oxyServices) return;
 
     try {
-      const response = await fetch('http://localhost:4000/api/notes', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${activeSessionId}`,
-        },
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        setNotes(result.notes || []);
-      } else {
-        console.error('Failed to fetch notes:', result.error);
-      }
+      const result = await notesApi.getAllNotes(activeSessionId);
+      setNotes(result.notes || []);
     } catch (error) {
       console.error('Error fetching notes:', error);
       Alert.alert('Error', 'Failed to fetch notes');

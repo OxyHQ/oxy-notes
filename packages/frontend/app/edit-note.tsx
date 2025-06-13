@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useOxy } from '@oxyhq/services';
 import { router, useLocalSearchParams } from 'expo-router';
+import { notesApi, Note } from '../utils/api';
 
 const COLORS = [
   '#ffffff', // White (default)
@@ -27,16 +28,6 @@ const COLORS = [
   '#e6c9a8', // Brown
   '#e8eaed', // Gray
 ];
-
-interface Note {
-  id: string;
-  title: string;
-  content: string;
-  color: string;
-  createdAt: string;
-  updatedAt: string;
-  userId: string;
-}
 
 export default function EditNoteScreen() {
   const { noteId } = useLocalSearchParams();
