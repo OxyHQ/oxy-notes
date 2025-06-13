@@ -44,24 +44,12 @@ export default function EditNoteScreen() {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:4000/api/notes/${noteId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${activeSessionId}`,
-        },
-      });
-
-      const result = await response.json();
-
-      if (result.success && result.note) {
-        setNote(result.note);
-        setTitle(result.note.title);
-        setContent(result.note.content);
-        setSelectedColor(result.note.color);
-      } else {
-        Alert.alert('Error', 'Note not found');
-        router.back();
-      }
+      const result = await notesApi.getNoteById(noteId as string, oxyServices, activeSessionId);
+      
+      setNote(result.note);
+      setTitle(result.note.title);
+      setContent(result.note.content);
+      setSelectedColor(result.note.color);
     } catch (error) {
       console.error('Error fetching note:', error);
       Alert.alert('Error', 'Failed to load note');
@@ -90,28 +78,15 @@ export default function EditNoteScreen() {
 
     setIsSaving(true);
     try {
-      const response = await fetch(`http://localhost:4000/api/notes/${noteId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${activeSessionId}`,
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          content: content.trim(),
-          color: selectedColor,
-        }),
-      });
+      await notesApi.updateNote(noteId as string, {
+        title: title.trim(),
+        content: content.trim(),
+        color: selectedColor,
+      }, oxyServices, activeSessionId);
 
-      const result = await response.json();
-
-      if (result.success) {
-        Alert.alert('Success', 'Note updated successfully', [
-          { text: 'OK', onPress: () => router.back() }
-        ]);
-      } else {
-        Alert.alert('Error', result.message || 'Failed to update note');
-      }
+      Alert.alert('Success', 'Note updated successfully', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
     } catch (error) {
       console.error('Error updating note:', error);
       Alert.alert('Error', 'Failed to update note. Please try again.');
@@ -133,22 +108,11 @@ export default function EditNoteScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              const response = await fetch(`http://localhost:4000/api/notes/${noteId}`, {
-                method: 'DELETE',
-                headers: {
-                  'Authorization': `Bearer ${activeSessionId}`,
-                },
-              });
-
-              const result = await response.json();
-
-              if (result.success) {
-                Alert.alert('Success', 'Note deleted successfully', [
-                  { text: 'OK', onPress: () => router.back() }
-                ]);
-              } else {
-                Alert.alert('Error', result.message || 'Failed to delete note');
-              }
+              await notesApi.deleteNote(noteId as string, oxyServices, activeSessionId);
+              
+              Alert.alert('Success', 'Note deleted successfully', [
+                { text: 'OK', onPress: () => router.back() }
+              ]);
             } catch (error) {
               console.error('Error deleting note:', error);
               Alert.alert('Error', 'Failed to delete note. Please try again.');

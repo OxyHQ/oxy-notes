@@ -29,7 +29,7 @@ export default function NotesScreen() {
     if (!activeSessionId || !oxyServices) return;
 
     try {
-      const result = await notesApi.getAllNotes(activeSessionId);
+      const result = await notesApi.getAllNotes(oxyServices, activeSessionId);
       setNotes(result.notes || []);
     } catch (error) {
       console.error('Error fetching notes:', error);

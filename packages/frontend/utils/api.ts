@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { OxyServices } from '@oxyhq/services';
 
 // API Configuration
 const API_CONFIG = {
@@ -60,11 +61,12 @@ class ApiError extends Error {
   }
 }
 
-// Base API request function
+// Base API request function with OxyServices token management
 async function apiRequest<T = any>(
   endpoint: string,
   options: RequestInit = {},
-  sessionId?: string
+  oxyServices?: OxyServices,
+  activeSessionId?: string
 ): Promise<T> {
   const url = `${API_CONFIG.baseURL}${endpoint}`;
   
@@ -73,8 +75,20 @@ async function apiRequest<T = any>(
     ...(options.headers as Record<string, string>),
   };
 
-  if (sessionId) {
-    headers['Authorization'] = `Bearer ${sessionId}`;
+  // Use OxyServices to get the proper token
+  if (oxyServices && activeSessionId) {
+    try {
+      const tokenData = await oxyServices.getTokenBySession(activeSessionId);
+      
+      if (!tokenData) {
+        throw new ApiError('No authentication token found', 401);
+      }
+      
+      headers['Authorization'] = `Bearer ${tokenData.accessToken}`;
+    } catch (error) {
+      console.error('Failed to get token:', error);
+      throw new ApiError('Authentication failed', 401);
+    }
   }
 
   try {
@@ -109,21 +123,21 @@ async function apiRequest<T = any>(
 // Notes API functions
 export const notesApi = {
   // Get all notes for the authenticated user
-  async getAllNotes(sessionId: string): Promise<NotesResponse> {
+  async getAllNotes(oxyServices: OxyServices, activeSessionId: string): Promise<NotesResponse> {
     return apiRequest<NotesResponse>(API_CONFIG.endpoints.notes, {
       method: 'GET',
-    }, sessionId);
+    }, oxyServices, activeSessionId);
   },
 
   // Get a specific note by ID
-  async getNoteById(noteId: string, sessionId: string): Promise<NoteResponse> {
+  async getNoteById(noteId: string, oxyServices: OxyServices, activeSessionId: string): Promise<NoteResponse> {
     return apiRequest<NoteResponse>(`${API_CONFIG.endpoints.notes}/${noteId}`, {
       method: 'GET',
-    }, sessionId);
+    }, oxyServices, activeSessionId);
   },
 
   // Create a new note
-  async createNote(noteData: CreateNoteData, sessionId: string): Promise<NoteResponse> {
+  async createNote(noteData: CreateNoteData, oxyServices: OxyServices, activeSessionId: string): Promise<NoteResponse> {
     return apiRequest<NoteResponse>(API_CONFIG.endpoints.notes, {
       method: 'POST',
       body: JSON.stringify({
@@ -131,40 +145,40 @@ export const notesApi = {
         content: noteData.content.trim(),
         color: noteData.color || '#ffffff',
       }),
-    }, sessionId);
+    }, oxyServices, activeSessionId);
   },
 
   // Update an existing note
-  async updateNote(noteId: string, noteData: UpdateNoteData, sessionId: string): Promise<NoteResponse> {
+  async updateNote(noteId: string, noteData: UpdateNoteData, oxyServices: OxyServices, activeSessionId: string): Promise<NoteResponse> {
     return apiRequest<NoteResponse>(`${API_CONFIG.endpoints.notes}/${noteId}`, {
       method: 'PUT',
       body: JSON.stringify(noteData),
-    }, sessionId);
+    }, oxyServices, activeSessionId);
   },
 
   // Delete a note
-  async deleteNote(noteId: string, sessionId: string): Promise<ApiResponse> {
+  async deleteNote(noteId: string, oxyServices: OxyServices, activeSessionId: string): Promise<ApiResponse> {
     return apiRequest<ApiResponse>(`${API_CONFIG.endpoints.notes}/${noteId}`, {
       method: 'DELETE',
-    }, sessionId);
+    }, oxyServices, activeSessionId);
   },
 };
 
 // User API functions
 export const userApi = {
   // Get user sessions
-  async getUserSessions(sessionId: string): Promise<ApiResponse> {
+  async getUserSessions(oxyServices: OxyServices, activeSessionId: string): Promise<ApiResponse> {
     return apiRequest<ApiResponse>(API_CONFIG.endpoints.userSessions, {
       method: 'GET',
-    }, sessionId);
+    }, oxyServices, activeSessionId);
   },
 
   // Send a message (example endpoint from the backend)
-  async sendMessage(messageData: { title: string; content: string }, sessionId: string): Promise<ApiResponse> {
+  async sendMessage(messageData: { title: string; content: string }, oxyServices: OxyServices, activeSessionId: string): Promise<ApiResponse> {
     return apiRequest<ApiResponse>(API_CONFIG.endpoints.messages, {
       method: 'POST',
       body: JSON.stringify(messageData),
-    }, sessionId);
+    }, oxyServices, activeSessionId);
   },
 };
 

@@ -5,7 +5,7 @@ const { OxyServices } = require('@oxyhq/services/core');
 
 // Initialize OxyServices with your Oxy API URL
 const oxyServices = new OxyServices({
-  baseURL: 'http://localhost:3001', // Replace with your Oxy API URL
+  baseURL: 'https://api.oxy.so', // Replace with your Oxy API URL
 });
 
 // Express setup

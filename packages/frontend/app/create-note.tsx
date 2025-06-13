@@ -53,7 +53,7 @@ export default function CreateNoteScreen() {
         title: title.trim(),
         content: content.trim(),
         color: selectedColor,
-      }, activeSessionId);
+      }, oxyServices, activeSessionId);
 
       Alert.alert('Success', 'Note saved successfully', [
         { text: 'OK', onPress: () => router.back() }
