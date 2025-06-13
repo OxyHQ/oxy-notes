@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { OxyProvider, OxyServices } from '@oxyhq/services';
+import BottomNavigation from '../ui/components/navigation/BottomNavigation';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -39,16 +40,21 @@ export default function RootLayout() {
     >
       <SafeAreaProvider>
         <View style={styles.container}>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}
-          >
-            <Stack.Screen name="index" />
-            <Stack.Screen name="create-note" />
-            <Stack.Screen name="edit-note" />
-          </Stack>
+          <View style={styles.content}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+              <Stack.Screen name="index" />
+              <Stack.Screen name="create-note" />
+              <Stack.Screen name="edit-note" />
+              <Stack.Screen name="search" />
+              <Stack.Screen name="profile" />
+            </Stack>
+          </View>
           
+          <BottomNavigation />
           <StatusBar style="auto" />
         </View>
       </SafeAreaProvider>
@@ -60,5 +66,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  content: {
+    flex: 1,
   },
 });

@@ -1,22 +1,63 @@
 # API Utils
 
-This directory contains utility functions for making API requests in the Noted application.
+This directory contains utility functions for making authenticated API requests to the Noted backend server.
+
+## Overview
+
+The API utils act as middleware between the React Native frontend and the Express.js backend, handling:
+- Authentication token retrieval using OxyServices
+- Request/response formatting
+- Error handling
+- Type safety
 
 ## Files
 
 ### `api.ts`
-Contains all the API functions organized by feature:
+Contains all the API functions organized by feature, using OxyServices for authentication:
 
 #### Notes API (`notesApi`)
-- `getAllNotes(sessionId)` - Get all notes for the authenticated user
-- `getNoteById(noteId, sessionId)` - Get a specific note by ID
-- `createNote(noteData, sessionId)` - Create a new note
-- `updateNote(noteId, noteData, sessionId)` - Update an existing note
-- `deleteNote(noteId, sessionId)` - Delete a note
+- `getAllNotes(oxyServices, activeSessionId)` - Get all notes for the authenticated user
+- `getNoteById(noteId, oxyServices, activeSessionId)` - Get a specific note by ID
+- `createNote(noteData, oxyServices, activeSessionId)` - Create a new note
+- `updateNote(noteId, noteData, oxyServices, activeSessionId)` - Update an existing note
+- `deleteNote(noteId, oxyServices, activeSessionId)` - Delete a note
 
 #### User API (`userApi`)
-- `getUserSessions(sessionId)` - Get user session information
-- `sendMessage(messageData, sessionId)` - Send a message (example endpoint)
+- `getUserSessions(oxyServices, activeSessionId)` - Get user session information
+- `sendMessage(messageData, oxyServices, activeSessionId)` - Send a message
+
+## Usage
+
+### Basic API Request Flow
+
+```typescript
+import { notesApi } from '../utils/api';
+import { useOxy } from '@oxyhq/services';
+
+function MyComponent() {
+  const { oxyServices, activeSessionId } = useOxy();
+
+  const fetchNotes = async () => {
+    try {
+      // The API automatically handles:
+      // 1. Getting the access token from OxyServices
+      // 2. Adding Authorization header
+      // 3. Making the request
+      // 4. Handling errors
+      const result = await notesApi.getAllNotes(oxyServices, activeSessionId);
+      console.log(result.notes);
+    } catch (error) {
+      console.error('Failed to fetch notes:', error);
+    }
+  };
+}
+```
+
+### Authentication Flow
+
+1. **Token Retrieval**: The API middleware calls `oxyServices.getTokenBySession(activeSessionId)` to get the current access token
+2. **Request Headers**: Automatically adds `Authorization: Bearer ${accessToken}` header
+3. **Error Handling**: If token retrieval fails, throws authentication error
 
 #### Health API (`healthApi`)
 - `checkHealth()` - Check server health status (public endpoint)

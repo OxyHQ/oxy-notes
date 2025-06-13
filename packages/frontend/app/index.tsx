@@ -1,53 +1,38 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
   Alert,
   RefreshControl,
   Dimensions,
+  TextInput,
 } from 'react-native';
 import { useOxy } from '@oxyhq/services';
 import { OxySignInButton } from '@oxyhq/services/full';
 import { router } from 'expo-router';
-import { notesApi, Note } from '../utils/api';
+import { useOfflineNotes } from '../ui/hooks/useOfflineNotes';
+import { StoredNote } from '../utils/storage';
 
 export default function NotesScreen() {
-  const { user, oxyServices, activeSessionId } = useOxy();
-  const [notes, setNotes] = useState<Note[]>([]);
+  const { user } = useOxy();
+  const {
+    notes,
+    isLoading,
+    isOnline,
+    syncStatus,
+    pendingSyncCount,
+    deleteNote,
+    refresh,
+  } = useOfflineNotes();
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const screenWidth = Dimensions.get('window').width;
-  const itemWidth = viewMode === 'grid' ? (screenWidth - 40) / 2 - 10 : screenWidth - 40;
-
-  const fetchNotes = useCallback(async () => {
-    if (!activeSessionId || !oxyServices) return;
-
-    try {
-      const result = await notesApi.getAllNotes(oxyServices, activeSessionId);
-      setNotes(result.notes || []);
-    } catch (error) {
-      console.error('Error fetching notes:', error);
-      Alert.alert('Error', 'Failed to fetch notes');
-    }
-  }, [activeSessionId, oxyServices]);
-
-  useEffect(() => {
-    if (user && activeSessionId) {
-      fetchNotes();
-    }
-  }, [user, activeSessionId, fetchNotes]);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await fetchNotes();
-    setRefreshing(false);
-  };
+  const itemWidth = viewMode === 'grid' ? (screenWidth - 48) / 2 : screenWidth - 32;
 
   const filteredNotes = notes.filter(
     (note) =>
@@ -55,31 +40,56 @@ export default function NotesScreen() {
       note.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const createNewNote = () => {
-    router.push('/create-note');
+  const handleDeleteNote = async (note: StoredNote) => {
+    Alert.alert(
+      'Delete Note',
+      'Are you sure you want to delete this note?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteNote(note.localId);
+            } catch (error) {
+              Alert.alert('Error', 'Failed to delete note');
+            }
+          },
+        },
+      ]
+    );
   };
 
-  const openNote = (note: Note) => {
+  const openNote = (note: StoredNote) => {
     router.push({
       pathname: '/edit-note',
-      params: { noteId: note.id }
+      params: { noteId: note.localId }
     });
   };
 
-  const renderNote = (note: Note) => (
+  const renderNote = (note: StoredNote) => (
     <TouchableOpacity
-      key={note.id}
+      key={note.localId}
       style={[
         styles.noteCard,
         { backgroundColor: note.color, width: itemWidth },
-        viewMode === 'list' && styles.listModeCard
+        viewMode === 'list' && styles.listNote,
       ]}
       onPress={() => openNote(note)}
+      onLongPress={() => handleDeleteNote(note)}
     >
-      <Text style={styles.noteTitle} numberOfLines={2}>
-        {note.title || 'Untitled'}
-      </Text>
-      <Text style={styles.noteContent} numberOfLines={viewMode === 'grid' ? 8 : 3}>
+      <View style={styles.noteHeader}>
+        <Text style={styles.noteTitle} numberOfLines={2}>
+          {note.title || 'Untitled'}
+        </Text>
+        {note.syncStatus === 'pending' && (
+          <View style={styles.syncIndicator}>
+            <Text style={styles.syncText}>⏳</Text>
+          </View>
+        )}
+      </View>
+      <Text style={styles.noteContent} numberOfLines={viewMode === 'grid' ? 6 : 3}>
         {note.content}
       </Text>
       <Text style={styles.noteDate}>
@@ -91,26 +101,14 @@ export default function NotesScreen() {
   if (!user) {
     return (
       <View style={styles.container}>
-        <View style={styles.authPrompt}>
-          <Text style={styles.authPromptIcon}>�</Text>
-          <Text style={styles.authPromptTitle}>Welcome to Noted</Text>
-          <Text style={styles.authPromptText}>
-            Your personal note-taking app inspired by Google Keep
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.welcomeIcon}>📝</Text>
+          <Text style={styles.welcomeTitle}>Welcome to Noted</Text>
+          <Text style={styles.welcomeSubtitle}>
+            Your personal note-taking app with offline sync
           </Text>
-          <Text style={styles.authPromptDescription}>
-            Create, organize, and search through your notes with beautiful colors and simple design.
-          </Text>
-          
-          <OxySignInButton 
-            style={styles.signInButton}
-          />
-          
-          <View style={styles.features}>
-            <Text style={styles.featureItem}>• Create and edit notes</Text>
-            <Text style={styles.featureItem}>• Choose from multiple colors</Text>
-            <Text style={styles.featureItem}>• Search through your notes</Text>
-            <Text style={styles.featureItem}>• Grid and list view modes</Text>
-            <Text style={styles.featureItem}>• Secure authentication</Text>
+          <View style={styles.signInContainer}>
+            <OxySignInButton />
           </View>
         </View>
       </View>
@@ -121,49 +119,84 @@ export default function NotesScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.appTitle}>Noted</Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.viewModeButton}
-            onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-          >
-            <Text style={styles.viewModeIcon}>
-              {viewMode === 'grid' ? '☰' : '⊞'}
-            </Text>
-          </TouchableOpacity>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>My Notes</Text>
+          <View style={styles.headerActions}>
+            {!isOnline && (
+              <View style={styles.offlineIndicator}>
+                <Text style={styles.offlineText}>📡 Offline</Text>
+              </View>
+            )}
+            {pendingSyncCount > 0 && (
+              <View style={styles.pendingIndicator}>
+                <Text style={styles.pendingText}>{pendingSyncCount} pending</Text>
+              </View>
+            )}
+            <TouchableOpacity
+              style={styles.viewToggle}
+              onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+            >
+              <Text style={styles.viewToggleText}>
+                {viewMode === 'grid' ? '☰' : '⚏'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search notes..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor="#666"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <Text style={styles.clearIcon}>✕</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <Text style={styles.searchIcon}>🔍</Text>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search your notes"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholderTextColor="#666"
-        />
-      </View>
+      {/* Sync Status */}
+      {syncStatus.status === 'syncing' && (
+        <View style={styles.syncStatus}>
+          <Text style={styles.syncStatusText}>
+            🔄 Syncing... {syncStatus.progress || 0}%
+          </Text>
+        </View>
+      )}
 
-      {/* Notes Grid/List */}
-      <ScrollView
+      {/* Notes List */}
+      <ScrollView 
         style={styles.notesContainer}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isLoading} onRefresh={refresh} />
         }
       >
         {filteredNotes.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateIcon}>📝</Text>
-            <Text style={styles.emptyStateTitle}>
-              {searchQuery ? 'No notes found' : 'No notes yet'}
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyIcon}>📝</Text>
+            <Text style={styles.emptyTitle}>
+              {searchQuery ? 'No matching notes' : 'No notes yet'}
             </Text>
-            <Text style={styles.emptyStateText}>
-              {searchQuery
-                ? 'Try searching with different keywords'
-                : 'Tap the + button to create your first note'}
+            <Text style={styles.emptySubtitle}>
+              {searchQuery 
+                ? 'Try a different search term' 
+                : 'Tap the + button to create your first note'
+              }
             </Text>
+            {!searchQuery && (
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={() => router.push('/create-note')}
+              >
+                <Text style={styles.createButtonText}>Create Note</Text>
+              </TouchableOpacity>
+            )}
           </View>
         ) : (
           <View style={[
@@ -176,9 +209,14 @@ export default function NotesScreen() {
       </ScrollView>
 
       {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab} onPress={createNewNote}>
-        <Text style={styles.fabIcon}>+</Text>
-      </TouchableOpacity>
+      {notes.length > 0 && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => router.push('/create-note')}
+        >
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -188,10 +226,34 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fafafa',
   },
-  header: {
-    flexDirection: 'row',
+  welcomeContainer: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  welcomeIcon: {
+    fontSize: 80,
+    marginBottom: 16,
+  },
+  welcomeTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  welcomeSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 32,
+    lineHeight: 24,
+  },
+  signInContainer: {
+    alignItems: 'center',
+  },
+  header: {
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 16,
@@ -199,7 +261,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
-  appTitle: {
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
@@ -207,31 +275,109 @@ const styles = StyleSheet.create({
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
+  },
+  offlineIndicator: {
+    backgroundColor: '#ff6b6b',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  offlineText: {
+    fontSize: 10,
+    color: '#fff',
+    fontWeight: '600',
+  },
+  pendingIndicator: {
+    backgroundColor: '#ffc107',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  pendingText: {
+    fontSize: 10,
+    color: '#333',
+    fontWeight: '600',
+  },
+  viewToggle: {
+    padding: 4,
+  },
+  viewToggleText: {
+    fontSize: 20,
+    color: '#666',
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
     borderRadius: 25,
-    marginHorizontal: 16,
-    marginVertical: 12,
     paddingHorizontal: 16,
+    height: 44,
   },
   searchIcon: {
+    fontSize: 16,
     marginRight: 8,
   },
   searchInput: {
     flex: 1,
-    height: 40,
     fontSize: 16,
     color: '#333',
   },
-  viewModeButton: {
-    padding: 8,
+  clearIcon: {
+    fontSize: 16,
+    color: '#666',
+    padding: 4,
+  },
+  syncStatus: {
+    backgroundColor: '#e3f2fd',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  syncStatusText: {
+    fontSize: 14,
+    color: '#1976d2',
+    textAlign: 'center',
   },
   notesContainer: {
     flex: 1,
     paddingHorizontal: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 80,
+  },
+  emptyIcon: {
+    fontSize: 80,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  createButton: {
+    backgroundColor: '#ffc107',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 24,
+  },
+  createButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
   },
   notesGrid: {
     flexDirection: 'row',
@@ -258,14 +404,26 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  listModeCard: {
+  listNote: {
     width: '100%',
   },
+  noteHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
   noteTitle: {
+    flex: 1,
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 8,
+  },
+  syncIndicator: {
+    marginLeft: 8,
+  },
+  syncText: {
+    fontSize: 12,
   },
   noteContent: {
     fontSize: 14,
@@ -276,25 +434,6 @@ const styles = StyleSheet.create({
   noteDate: {
     fontSize: 12,
     color: '#999',
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 80,
-  },
-  emptyStateTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#666',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptyStateText: {
-    fontSize: 14,
-    color: '#999',
-    textAlign: 'center',
-    paddingHorizontal: 32,
   },
   fab: {
     position: 'absolute',
@@ -315,59 +454,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 8,
   },
-  authPrompt: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
-  },
-  authPromptTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  authPromptText: {
-    fontSize: 18,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 16,
-    lineHeight: 24,
-  },
-  authPromptDescription: {
-    fontSize: 16,
-    color: '#888',
-    textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 22,
-    paddingHorizontal: 16,
-  },
-  signInButton: {
-    marginBottom: 32,
-  },
-  features: {
-    alignItems: 'flex-start',
-  },
-  featureItem: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  authPromptIcon: {
-    fontSize: 80,
-    marginBottom: 16,
-  },
-  viewModeIcon: {
-    fontSize: 20,
-    color: '#666',
-  },
-  emptyStateIcon: {
-    fontSize: 80,
-    marginBottom: 16,
-  },
-  fabIcon: {
+  fabText: {
     fontSize: 32,
     color: '#fff',
     fontWeight: 'bold',

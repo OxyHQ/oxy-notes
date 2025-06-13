@@ -49,7 +49,7 @@ export default function CreateNoteScreen() {
 
     setIsSaving(true);
     try {
-      const result = await notesApi.createNote({
+      await notesApi.createNote({
         title: title.trim(),
         content: content.trim(),
         color: selectedColor,
