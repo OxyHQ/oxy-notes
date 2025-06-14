@@ -10,6 +10,10 @@ interface TabItem {
   label: string;
 }
 
+interface BottomNavigationProps {
+  orientation?: 'horizontal' | 'vertical';
+}
+
 const tabs: TabItem[] = [
   {
     name: 'notes',
@@ -37,7 +41,7 @@ const tabs: TabItem[] = [
   },
 ];
 
-export default function BottomNavigation() {
+export default function BottomNavigation({ orientation = 'horizontal' }: BottomNavigationProps) {
   const pathname = usePathname();
 
   const handleTabPress = (path: string) => {
@@ -54,13 +58,18 @@ export default function BottomNavigation() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container,
+      orientation === 'vertical' ? styles.verticalContainer : styles.horizontalContainer,
+    ]}>
       {tabs.map((tab) => (
         <TouchableOpacity
           key={tab.name}
           style={[
             styles.tab,
             isActive(tab.path) && styles.activeTab,
+            orientation === 'vertical' ? styles.verticalTab : styles.horizontalTab,
+            orientation === 'vertical' && isActive(tab.path) ? styles.verticalActiveTab : {},
           ]}
           onPress={() => handleTabPress(tab.path)}
           activeOpacity={0.7}
@@ -78,6 +87,7 @@ export default function BottomNavigation() {
           <Text style={[
             styles.label,
             isActive(tab.path) && styles.activeLabel,
+            orientation === 'vertical' ? styles.verticalLabel : {},
           ]}>
             {tab.label}
           </Text>
@@ -89,37 +99,61 @@ export default function BottomNavigation() {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
     backgroundColor: '#fff',
+  },
+  horizontalContainer: {
+    flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
-    paddingBottom: 20,
-    paddingTop: 10,
-    elevation: 8,
-    shadowColor: '#000',
+    paddingVertical: 8,
+  },
+  verticalContainer: {
+    flexDirection: 'column',
+    height: '100%',
+    paddingVertical: 20,
+    borderRightWidth: 1,
+    borderRightColor: '#e0e0e0',
     shadowOffset: {
-      width: 0,
-      height: -2,
+      width: 2,
+      height: 0,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
   },
   tab: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 8,
+  },
+  horizontalTab: {
+    flex: 1,
+  },
+  verticalTab: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginVertical: 4,
+    marginHorizontal: 8,
   },
   activeTab: {
     backgroundColor: 'rgba(255, 193, 7, 0.1)',
     borderRadius: 12,
     marginHorizontal: 4,
   },
+  verticalActiveTab: {
+    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+    borderRadius: 12,
+    width: '90%',
+  },
   label: {
     fontSize: 12,
     color: '#666',
     fontWeight: '500',
     marginTop: 4,
+  },
+  verticalLabel: {
+    marginLeft: 12,
+    marginTop: 0,
+    fontSize: 14,
   },
   activeLabel: {
     color: '#ffc107',

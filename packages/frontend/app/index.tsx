@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Alert,
   RefreshControl,
-  Dimensions,
   TextInput,
 } from 'react-native';
 import { useOxy } from '@oxyhq/services';
@@ -16,6 +15,8 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useOfflineNotes } from '../ui/hooks/useOfflineNotes';
 import { StoredNote } from '../utils/storage';
+import MasonryGrid from '../ui/components/MasonryGrid';
+import NoteCard from '../ui/components/NoteCard';
 
 export default function NotesScreen() {
   const { user } = useOxy();
@@ -30,10 +31,7 @@ export default function NotesScreen() {
   } = useOfflineNotes();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-  const screenWidth = Dimensions.get('window').width;
-  const itemWidth = viewMode === 'grid' ? (screenWidth - 48) / 2 : screenWidth - 32;
+  const [viewMode, setViewMode] = useState<'masonry' | 'grid' | 'list'>('masonry');
 
   const filteredNotes = notes.filter(
     (note) =>
@@ -53,7 +51,7 @@ export default function NotesScreen() {
           onPress: async () => {
             try {
               await deleteNote(note.localId);
-            } catch (error) {
+            } catch {
               Alert.alert('Error', 'Failed to delete note');
             }
           },
@@ -69,44 +67,15 @@ export default function NotesScreen() {
     });
   };
 
-  const renderNote = (note: StoredNote) => (
-    <TouchableOpacity
-      key={note.localId}
-      style={[
-        styles.noteCard,
-        { backgroundColor: note.color, width: itemWidth },
-        viewMode === 'list' && styles.listNote,
-      ]}
-      onPress={() => openNote(note)}
-      onLongPress={() => handleDeleteNote(note)}
-    >
-      <View style={styles.noteHeader}>
-        <Text style={styles.noteTitle} numberOfLines={2}>
-          {note.title || 'Untitled'}
-        </Text>
-        {note.syncStatus === 'pending' && (
-          <View style={styles.syncIndicator}>
-            {(() => {
-              const IconComponent = Ionicons as any;
-              return (
-                <IconComponent
-                  name="time"
-                  size={12}
-                  color="#ffc107"
-                />
-              );
-            })()}
-          </View>
-        )}
-      </View>
-      <Text style={styles.noteContent} numberOfLines={viewMode === 'grid' ? 6 : 3}>
-        {note.content}
-      </Text>
-      <Text style={styles.noteDate}>
-        {new Date(note.updatedAt).toLocaleDateString()}
-      </Text>
-    </TouchableOpacity>
-  );
+  const renderNote = (note: StoredNote) => {
+    return (
+      <NoteCard
+        note={note}
+        onPress={() => openNote(note)}
+        onLongPress={() => handleDeleteNote(note)}
+      />
+    );
+  };
 
   if (!user) {
     return (
@@ -165,13 +134,20 @@ export default function NotesScreen() {
             )}
             <TouchableOpacity
               style={styles.viewToggle}
-              onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+              onPress={() => {
+                const modes: ('masonry' | 'grid' | 'list')[] = ['masonry', 'grid', 'list'];
+                const currentIndex = modes.indexOf(viewMode);
+                const nextIndex = (currentIndex + 1) % modes.length;
+                setViewMode(modes[nextIndex]);
+              }}
             >
               {(() => {
                 const IconComponent = Ionicons as any;
+                const iconName = viewMode === 'masonry' ? 'apps' : 
+                               viewMode === 'grid' ? 'grid' : 'list';
                 return (
                   <IconComponent
-                    name={viewMode === 'grid' ? 'list' : 'grid'}
+                    name={iconName}
                     size={20}
                     color="#666"
                   />
@@ -241,13 +217,49 @@ export default function NotesScreen() {
       )}
 
       {/* Notes List */}
-      <ScrollView 
-        style={styles.notesContainer}
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refresh} />
-        }
-      >
-        {filteredNotes.length === 0 ? (
+      {viewMode === 'masonry' ? (
+        <View style={styles.notesContainer}>
+          {filteredNotes.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              {(() => {
+                const IconComponent = Ionicons as any;
+                return (
+                  <IconComponent
+                    name="document-text"
+                    size={80}
+                    color="#ccc"
+                    style={styles.emptyIcon}
+                  />
+                );
+              })()}
+              <Text style={styles.emptyTitle}>
+                {searchQuery ? 'No matching notes' : 'No notes yet'}
+              </Text>
+              <Text style={styles.emptySubtitle}>
+                {searchQuery
+                  ? 'Try adjusting your search'
+                  : 'Tap the + button to create your first note'}
+              </Text>
+            </View>
+          ) : (
+            <MasonryGrid
+              data={filteredNotes}
+              keyExtractor={(item) => item.localId}
+              numColumns={2}
+              renderItem={({ item }) => renderNote(item)}
+              refreshing={isLoading}
+              onRefresh={refresh}
+            />
+          )}
+        </View>
+      ) : (
+        <ScrollView 
+          style={styles.notesContainer}
+          refreshControl={
+            <RefreshControl refreshing={isLoading} onRefresh={refresh} />
+          }
+        >
+          {filteredNotes.length === 0 ? (
           <View style={styles.emptyContainer}>
             {(() => {
               const IconComponent = Ionicons as any;
@@ -283,10 +295,18 @@ export default function NotesScreen() {
             styles.notesGrid,
             viewMode === 'list' && styles.notesList
           ]}>
-            {filteredNotes.map(renderNote)}
+            {filteredNotes.map((note) => (
+              <NoteCard
+                key={note.localId}
+                note={note}
+                onPress={() => openNote(note)}
+                onLongPress={() => handleDeleteNote(note)}
+              />
+            ))}
           </View>
         )}
-      </ScrollView>
+        </ScrollView>
+      )}
 
       {/* Floating Action Button */}
       {notes.length > 0 && (
@@ -348,7 +368,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 34,
     fontWeight: 'bold',
     color: '#333',
   },
@@ -422,7 +442,10 @@ const styles = StyleSheet.create({
   },
   notesContainer: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 4,
+  },
+  masonryContainer: {
+    paddingVertical: 16,
   },
   emptyContainer: {
     flex: 1,
@@ -467,22 +490,6 @@ const styles = StyleSheet.create({
   },
   notesList: {
     flexDirection: 'column',
-  },
-  noteCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
   },
   listNote: {
     width: '100%',

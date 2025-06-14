@@ -10,9 +10,9 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useOxy } from '@oxyhq/services';
 import { router, useLocalSearchParams } from 'expo-router';
-import { notesApi, Note } from '../utils/api';
+import { useOfflineNotes } from '../ui/hooks/useOfflineNotes';
+import { StoredNote } from '../utils/storage';
 
 const COLORS = [
   '#ffffff', // White (default)
@@ -31,8 +31,8 @@ const COLORS = [
 
 export default function EditNoteScreen() {
   const { noteId } = useLocalSearchParams();
-  const { oxyServices, activeSessionId } = useOxy();
-  const [note, setNote] = useState<Note | null>(null);
+  const { getNoteById, updateNote, deleteNote } = useOfflineNotes();
+  const [note, setNote] = useState<StoredNote | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
@@ -40,16 +40,21 @@ export default function EditNoteScreen() {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchNote = useCallback(async () => {
-    if (!activeSessionId || !oxyServices || !noteId) return;
+    if (!noteId) return;
 
     setIsLoading(true);
     try {
-      const result = await notesApi.getNoteById(noteId as string, oxyServices, activeSessionId);
+      const foundNote = await getNoteById(noteId as string);
       
-      setNote(result.note);
-      setTitle(result.note.title);
-      setContent(result.note.content);
-      setSelectedColor(result.note.color);
+      if (foundNote) {
+        setNote(foundNote);
+        setTitle(foundNote.title);
+        setContent(foundNote.content);
+        setSelectedColor(foundNote.color);
+      } else {
+        Alert.alert('Error', 'Note not found');
+        router.back();
+      }
     } catch (error) {
       console.error('Error fetching note:', error);
       Alert.alert('Error', 'Failed to load note');
@@ -57,7 +62,7 @@ export default function EditNoteScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, [activeSessionId, oxyServices, noteId]);
+  }, [noteId, getNoteById]);
 
   useEffect(() => {
     if (noteId) {
@@ -66,8 +71,8 @@ export default function EditNoteScreen() {
   }, [fetchNote, noteId]);
 
   const saveNote = async () => {
-    if (!activeSessionId || !oxyServices || !noteId) {
-      Alert.alert('Error', 'Please sign in to save notes');
+    if (!noteId) {
+      Alert.alert('Error', 'Note ID is missing');
       return;
     }
 
@@ -78,11 +83,11 @@ export default function EditNoteScreen() {
 
     setIsSaving(true);
     try {
-      await notesApi.updateNote(noteId as string, {
+      await updateNote(noteId as string, {
         title: title.trim(),
         content: content.trim(),
         color: selectedColor,
-      }, oxyServices, activeSessionId);
+      });
 
       Alert.alert('Success', 'Note updated successfully', [
         { text: 'OK', onPress: () => router.back() }
@@ -95,8 +100,8 @@ export default function EditNoteScreen() {
     }
   };
 
-  const deleteNote = async () => {
-    if (!activeSessionId || !oxyServices || !noteId) return;
+  const handleDeleteNote = async () => {
+    if (!noteId) return;
 
     Alert.alert(
       'Delete Note',
@@ -108,7 +113,7 @@ export default function EditNoteScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await notesApi.deleteNote(noteId as string, oxyServices, activeSessionId);
+              await deleteNote(noteId as string);
               
               Alert.alert('Success', 'Note deleted successfully', [
                 { text: 'OK', onPress: () => router.back() }
@@ -148,7 +153,6 @@ export default function EditNoteScreen() {
 
   return (
     <KeyboardAvoidingView 
-      style={[styles.container, { backgroundColor: selectedColor }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* Header */}
@@ -158,7 +162,7 @@ export default function EditNoteScreen() {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Edit Note</Text>
         <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerButton} onPress={deleteNote}>
+          <TouchableOpacity style={styles.headerButton} onPress={handleDeleteNote}>
             <Text style={[styles.headerButtonText, styles.deleteButton]}>Delete</Text>
           </TouchableOpacity>
           <TouchableOpacity 
@@ -173,7 +177,7 @@ export default function EditNoteScreen() {
         </View>
       </View>
 
-      <ScrollView style={styles.content}>
+      <ScrollView style={[styles.content, { backgroundColor: selectedColor }]}>
         {/* Title Input */}
         <TextInput
           style={styles.titleInput}
@@ -285,13 +289,17 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 16,
+    padding: 16,
+    margin: 16,
+    borderWidth: 1,
+    borderColor: '#000',
+    borderRadius: 25,
   },
   titleInput: {
     fontSize: 20,
     fontWeight: '600',
     color: '#333',
-    paddingVertical: 16,
+    paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     marginBottom: 16,
@@ -337,7 +345,7 @@ const styles = StyleSheet.create({
   },
   metadataText: {
     fontSize: 12,
-    color: '#999',
+    color: '#000',
     marginBottom: 4,
   },
 });

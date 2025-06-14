@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -12,6 +12,9 @@ import BottomNavigation from '../ui/components/navigation/BottomNavigation';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const { width } = useWindowDimensions();
+  const isLargeScreen = width >= 768; // Tablet/desktop breakpoint
+  
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     Phudu: require('../assets/fonts/Phudu-VariableFont_wght.ttf'),
@@ -40,21 +43,43 @@ export default function RootLayout() {
     >
       <SafeAreaProvider>
         <View style={styles.container}>
-          <View style={styles.content}>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}
-            >
-              <Stack.Screen name="index" />
-              <Stack.Screen name="create-note" />
-              <Stack.Screen name="edit-note" />
-              <Stack.Screen name="search" />
-              <Stack.Screen name="profile" />
-            </Stack>
-          </View>
-          
-          <BottomNavigation />
+          {isLargeScreen && Platform.OS === 'web' ? (
+            <View style={styles.webContainer}>
+              <View style={styles.webSidebar}>
+                <BottomNavigation orientation="vertical" />
+              </View>
+              <View style={styles.webContent}>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                  }}
+                >
+                  <Stack.Screen name="index" />
+                  <Stack.Screen name="create-note" />
+                  <Stack.Screen name="edit-note" />
+                  <Stack.Screen name="search" />
+                  <Stack.Screen name="profile" />
+                </Stack>
+              </View>
+            </View>
+          ) : (
+            <>
+              <View style={styles.content}>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                  }}
+                >
+                  <Stack.Screen name="index" />
+                  <Stack.Screen name="create-note" />
+                  <Stack.Screen name="edit-note" />
+                  <Stack.Screen name="search" />
+                  <Stack.Screen name="profile" />
+                </Stack>
+              </View>
+              <BottomNavigation />
+            </>
+          )}
           <StatusBar style="auto" />
         </View>
       </SafeAreaProvider>
@@ -69,5 +94,17 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  webContainer: {
+    flex: 1, 
+    flexDirection: 'row',
+  },
+  webSidebar: {
+    width: 250,
+  },
+  webContent: {
+    flex: 1,
+    maxWidth: 1200,
+    width: '100%',
   },
 });

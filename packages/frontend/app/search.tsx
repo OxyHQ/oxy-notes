@@ -12,6 +12,18 @@ import { useOxy } from '@oxyhq/services';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { notesApi, Note } from '../utils/api';
+import NoteCard from '../ui/components/NoteCard';
+
+// Create StoredNote adapter from server Note
+const adaptNoteToStoredFormat = (note: Note) => {
+  // Safe conversion of Note to StoredNote
+  return {
+    ...note,
+    localId: note.id || `temp-${Date.now()}`,
+    lastModified: note.updatedAt ? new Date(note.updatedAt).getTime() : Date.now(),
+    syncStatus: 'synced' as const
+  };
+};
 
 export default function SearchScreen() {
   const { user, oxyServices, activeSessionId } = useOxy();
@@ -23,13 +35,18 @@ export default function SearchScreen() {
   const itemWidth = (screenWidth - 48) / 2;
 
   const fetchAllNotes = useCallback(async () => {
-    if (!activeSessionId || !oxyServices) return;
+    if (!activeSessionId || !oxyServices) {
+      console.log('Search: Missing session or services', { activeSessionId, hasServices: !!oxyServices });
+      return;
+    }
 
     try {
+      console.log('Search: Fetching notes...');
       const result = await notesApi.getAllNotes(oxyServices, activeSessionId);
+      console.log('Search: Notes fetched:', result.notes?.length || 0);
       setAllNotes(result.notes || []);
     } catch (error) {
-      console.error('Error fetching notes:', error);
+      console.error('Search: Error fetching notes:', error);
     }
   }, [activeSessionId, oxyServices]);
 
@@ -48,7 +65,8 @@ export default function SearchScreen() {
       );
       setSearchResults(filtered);
     } else {
-      setSearchResults([]);
+      // When no search query, show all notes
+      setSearchResults(allNotes);
     }
   }, [searchQuery, allNotes]);
 
@@ -59,26 +77,21 @@ export default function SearchScreen() {
     });
   };
 
-  const renderNote = (note: Note) => (
-    <TouchableOpacity
-      key={note.id}
-      style={[
-        styles.noteCard,
-        { backgroundColor: note.color, width: itemWidth },
-      ]}
-      onPress={() => openNote(note)}
-    >
-      <Text style={styles.noteTitle} numberOfLines={2}>
-        {note.title || 'Untitled'}
-      </Text>
-      <Text style={styles.noteContent} numberOfLines={6}>
-        {note.content}
-      </Text>
-      <Text style={styles.noteDate}>
-        {new Date(note.updatedAt).toLocaleDateString()}
-      </Text>
-    </TouchableOpacity>
-  );
+  const renderNote = (note: Note) => {
+    // Confirm note has all required properties
+    if (!note || !note.id) {
+      console.error('Invalid note object:', note);
+      return null;
+    }
+    return (
+      <NoteCard
+        key={note.id}
+        note={adaptNoteToStoredFormat(note)}
+        onPress={() => openNote(note)}
+        containerStyle={{ width: itemWidth }}
+      />
+    );
+  };
 
   if (!user) {
     return (
@@ -153,7 +166,7 @@ export default function SearchScreen() {
 
       {/* Search Results */}
       <ScrollView style={styles.resultsContainer}>
-        {!searchQuery.trim() ? (
+        {!searchQuery.trim() && allNotes.length === 0 ? (
           <View style={styles.emptyState}>
             {(() => {
               const IconComponent = Ionicons as any;
@@ -166,14 +179,20 @@ export default function SearchScreen() {
                 />
               );
             })()}
-            <Text style={styles.emptyStateTitle}>Start Searching</Text>
+            <Text style={styles.emptyStateTitle}>No Notes Found</Text>
             <Text style={styles.emptyStateText}>
-              Type in the search bar to find your notes by title or content
-            </Text>
-            <Text style={styles.statsText}>
-              {allNotes.length} notes available to search
+              You don&apos;t have any notes yet. Create some notes to search through them.
             </Text>
           </View>
+        ) : !searchQuery.trim() ? (
+          <>
+            <Text style={styles.resultsHeader}>
+              All Notes ({allNotes.length})
+            </Text>
+            <View style={styles.notesGrid}>
+              {searchResults.map(renderNote)}
+            </View>
+          </>
         ) : searchResults.length === 0 ? (
           <View style={styles.emptyState}>
             {(() => {
@@ -266,38 +285,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingBottom: 20,
-  },
-  noteCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  noteTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  noteContent: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-    marginBottom: 8,
-  },
-  noteDate: {
-    fontSize: 12,
-    color: '#999',
   },
   emptyState: {
     flex: 1,
