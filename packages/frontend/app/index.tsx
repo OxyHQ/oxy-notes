@@ -27,6 +27,7 @@ export default function NotesScreen() {
     syncStatus,
     pendingSyncCount,
     deleteNote,
+    archiveNote,
     refresh,
   } = useOfflineNotes();
 
@@ -35,8 +36,9 @@ export default function NotesScreen() {
 
   const filteredNotes = notes.filter(
     (note) =>
-      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      note.content.toLowerCase().includes(searchQuery.toLowerCase())
+      !note.archived && // Exclude archived notes from main view
+      (note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      note.content.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const handleDeleteNote = async (note: StoredNote) => {
@@ -51,7 +53,8 @@ export default function NotesScreen() {
           onPress: async () => {
             try {
               await deleteNote(note.localId);
-            } catch {
+            } catch (error) {
+              console.error('Error deleting note:', error);
               Alert.alert('Error', 'Failed to delete note');
             }
           },
@@ -70,11 +73,9 @@ export default function NotesScreen() {
           text: 'Archive',
           onPress: async () => {
             try {
-              // In a real implementation, you would call something like:
-              // await archiveNote(note.localId);
-              // For now we'll just show an alert
-              Alert.alert('Info', 'Archive functionality will be implemented soon');
-            } catch {
+              await archiveNote(note.localId);
+            } catch (error) {
+              console.error('Error archiving note:', error);
               Alert.alert('Error', 'Failed to archive note');
             }
           },

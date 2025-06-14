@@ -10,7 +10,7 @@ const STORAGE_KEYS = {
 
 export interface PendingSync {
   id: string;
-  action: 'create' | 'update' | 'delete';
+  action: 'create' | 'update' | 'delete' | 'archive' | 'unarchive';
   noteData?: Partial<Note>;
   timestamp: number;
 }

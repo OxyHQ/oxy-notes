@@ -17,6 +17,7 @@ export interface Note {
   title: string;
   content: string;
   color: string;
+  archived: boolean;
   createdAt: string;
   updatedAt: string;
   userId: string;
@@ -160,6 +161,20 @@ export const notesApi = {
   async deleteNote(noteId: string, oxyServices: OxyServices, activeSessionId: string): Promise<ApiResponse> {
     return apiRequest<ApiResponse>(`${API_CONFIG.endpoints.notes}/${noteId}`, {
       method: 'DELETE',
+    }, oxyServices, activeSessionId);
+  },
+
+  // Archive a note
+  async archiveNote(noteId: string, oxyServices: OxyServices, activeSessionId: string): Promise<NoteResponse> {
+    return apiRequest<NoteResponse>(`${API_CONFIG.endpoints.notes}/${noteId}/archive`, {
+      method: 'PATCH',
+    }, oxyServices, activeSessionId);
+  },
+
+  // Unarchive a note
+  async unarchiveNote(noteId: string, oxyServices: OxyServices, activeSessionId: string): Promise<NoteResponse> {
+    return apiRequest<NoteResponse>(`${API_CONFIG.endpoints.notes}/${noteId}/unarchive`, {
+      method: 'PATCH',
     }, oxyServices, activeSessionId);
   },
 };

@@ -12,6 +12,8 @@ export interface UseOfflineNotesReturn {
   createNote: (noteData: { title: string; content: string; color?: string }) => Promise<StoredNote>;
   updateNote: (localId: string, noteData: { title: string; content: string; color?: string }) => Promise<StoredNote>;
   deleteNote: (localId: string) => Promise<void>;
+  archiveNote: (localId: string) => Promise<StoredNote>;
+  unarchiveNote: (localId: string) => Promise<StoredNote>;
   getNoteById: (localId: string) => Promise<StoredNote | null>;
   syncNotes: () => Promise<void>;
   forceSyncNote: (localId: string) => Promise<void>;
@@ -31,6 +33,8 @@ export function useOfflineNotes(): UseOfflineNotesReturn {
     createNote: storeCreateNote,
     updateNote: storeUpdateNote,
     deleteNote: storeDeleteNote,
+    archiveNote: storeArchiveNote,
+    unarchiveNote: storeUnarchiveNote,
     getNoteById: storeGetNoteById,
     syncNotes: storeSyncNotes,
     forceSyncNote: storeForceSyncNote,
@@ -70,6 +74,14 @@ export function useOfflineNotes(): UseOfflineNotesReturn {
     return storeDeleteNote(localId, oxyServices, activeSessionId || undefined);
   }, [storeDeleteNote, oxyServices, activeSessionId]);
 
+  const archiveNote = useCallback(async (localId: string) => {
+    return storeArchiveNote(localId, oxyServices, activeSessionId || undefined);
+  }, [storeArchiveNote, oxyServices, activeSessionId]);
+
+  const unarchiveNote = useCallback(async (localId: string) => {
+    return storeUnarchiveNote(localId, oxyServices, activeSessionId || undefined);
+  }, [storeUnarchiveNote, oxyServices, activeSessionId]);
+
   const getNoteById = useCallback(async (localId: string) => {
     return storeGetNoteById(localId);
   }, [storeGetNoteById]);
@@ -98,6 +110,8 @@ export function useOfflineNotes(): UseOfflineNotesReturn {
     createNote,
     updateNote,
     deleteNote,
+    archiveNote,
+    unarchiveNote,
     getNoteById,
     syncNotes,
     forceSyncNote,

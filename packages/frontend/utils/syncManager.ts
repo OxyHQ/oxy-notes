@@ -74,6 +74,7 @@ class SyncManager {
       title: noteData.title,
       content: noteData.content,
       color: noteData.color || '#ffffff',
+      archived: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       userId,
@@ -207,6 +208,106 @@ class SyncManager {
     }
   }
 
+  async archiveNote(
+    localId: string,
+    oxyServices?: OxyServices,
+    activeSessionId?: string
+  ): Promise<StoredNote> {
+    const existingNote = await storageManager.getNoteById(localId);
+    if (!existingNote) {
+      throw new Error('Note not found');
+    }
+
+    // Update archived status locally immediately
+    const updatedNote: StoredNote = {
+      ...existingNote,
+      archived: true,
+      lastModified: Date.now(),
+      syncStatus: 'pending',
+    };
+
+    await storageManager.saveNote(updatedNote);
+
+    if (this.isOnline && oxyServices && activeSessionId && existingNote.id && !existingNote.id.startsWith('local_')) {
+      // Try to sync archive immediately if we have a server ID
+      try {
+        const result = await notesApi.archiveNote(existingNote.id, oxyServices, activeSessionId);
+        updatedNote.syncStatus = 'synced';
+        updatedNote.archived = result.note.archived;
+        updatedNote.updatedAt = result.note.updatedAt;
+        await storageManager.saveNote(updatedNote);
+        return updatedNote;
+      } catch (error) {
+        console.error('Failed to sync note archive:', error);
+        // Add to pending sync queue
+        await this.addToPendingSync({
+          id: localId,
+          action: 'archive',
+          timestamp: Date.now(),
+        });
+      }
+    } else if (existingNote.id && !existingNote.id.startsWith('local_')) {
+      // Add to pending sync queue for later if it's a server note
+      await this.addToPendingSync({
+        id: localId,
+        action: 'archive',
+        timestamp: Date.now(),
+      });
+    }
+
+    return updatedNote;
+  }
+
+  async unarchiveNote(
+    localId: string,
+    oxyServices?: OxyServices,
+    activeSessionId?: string
+  ): Promise<StoredNote> {
+    const existingNote = await storageManager.getNoteById(localId);
+    if (!existingNote) {
+      throw new Error('Note not found');
+    }
+
+    // Update archived status locally immediately
+    const updatedNote: StoredNote = {
+      ...existingNote,
+      archived: false,
+      lastModified: Date.now(),
+      syncStatus: this.isOnline ? 'pending' : 'pending',
+    };
+
+    await storageManager.saveNote(updatedNote);
+
+    if (this.isOnline && oxyServices && activeSessionId && existingNote.id && !existingNote.id.startsWith('local_')) {
+      // Try to sync unarchive immediately if we have a server ID
+      try {
+        const result = await notesApi.unarchiveNote(existingNote.id, oxyServices, activeSessionId);
+        updatedNote.syncStatus = 'synced';
+        updatedNote.archived = result.note.archived;
+        updatedNote.updatedAt = result.note.updatedAt;
+        await storageManager.saveNote(updatedNote);
+        return updatedNote;
+      } catch (error) {
+        console.error('Failed to sync note unarchive:', error);
+        // Add to pending sync queue
+        await this.addToPendingSync({
+          id: localId,
+          action: 'unarchive',
+          timestamp: Date.now(),
+        });
+      }
+    } else if (existingNote.id && !existingNote.id.startsWith('local_')) {
+      // Add to pending sync queue for later if it's a server note
+      await this.addToPendingSync({
+        id: localId,
+        action: 'unarchive',
+        timestamp: Date.now(),
+      });
+    }
+
+    return updatedNote;
+  }
+
   async getAllNotes(): Promise<StoredNote[]> {
     return await storageManager.getAllNotes();
   }
@@ -305,6 +406,22 @@ class SyncManager {
               await notesApi.deleteNote(localNote.id, oxyServices, activeSessionId);
             }
             break;
+          case 'archive':
+            const archivedNote = await storageManager.getNoteById(sync.id);
+            if (archivedNote && archivedNote.id && !archivedNote.id.startsWith('local_')) {
+              await notesApi.archiveNote(archivedNote.id, oxyServices, activeSessionId);
+              archivedNote.syncStatus = 'synced';
+              await storageManager.saveNote(archivedNote);
+            }
+            break;
+          case 'unarchive':
+            const unarchiveNote = await storageManager.getNoteById(sync.id);
+            if (unarchiveNote && unarchiveNote.id && !unarchiveNote.id.startsWith('local_')) {
+              await notesApi.unarchiveNote(unarchiveNote.id, oxyServices, activeSessionId);
+              unarchiveNote.syncStatus = 'synced';
+              await storageManager.saveNote(unarchiveNote);
+            }
+            break;
         }
         
         // Remove from pending syncs
@@ -339,6 +456,7 @@ class SyncManager {
           existingLocal.title = serverNote.title;
           existingLocal.content = serverNote.content;
           existingLocal.color = serverNote.color;
+          existingLocal.archived = serverNote.archived;
           existingLocal.updatedAt = serverNote.updatedAt;
           existingLocal.lastModified = serverModified;
           await storageManager.saveNote(existingLocal);
