@@ -11,15 +11,20 @@ import {
 import { useOxy } from '@oxyhq/services';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
+import { useNotesStore } from '../stores/notesStore';
+import ExportNotesModal from '../ui/components/ExportNotesModal';
 
 export default function SettingsScreen() {
   const { user } = useOxy();
+  const { notes } = useNotesStore();
   
   // Settings state
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [autoSync, setAutoSync] = useState(true);
   const [offlineMode, setOfflineMode] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   const handleSignOut = () => {
     Alert.alert(
@@ -64,23 +69,16 @@ export default function SettingsScreen() {
   };
 
   const handleExportData = () => {
-    Alert.alert(
-      'Export Data',
-      'Your notes will be exported as a backup file.',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Export',
-          onPress: () => {
-            // Implementation would export user data
-            Alert.alert('Success', 'Data export started');
-          },
-        },
-      ]
-    );
+    if (notes.length === 0) {
+      Alert.alert(
+        'No Notes to Export',
+        'You don\'t have any notes to export yet. Create some notes first.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
+    setShowExportModal(true);
   };
 
   if (!user) {
@@ -115,51 +113,179 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView style={styles.content}>
-        {/* User Info Card */}
-        <View style={styles.userCard}>
-          <View style={styles.userIcon}>
-            {(() => {
-              const IconComponent = Ionicons as any;
-              return (
-                <IconComponent
-                  name="person"
-                  size={32}
-                  color="#fff"
-                />
-              );
-            })()}
+        {/* User Info */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Account</Text>
+          
+          <TouchableOpacity 
+            style={[styles.settingItem, styles.firstSettingItem, styles.lastSettingItem]}
+            onPress={() => {
+              // Future: Navigate to account management screen
+              Alert.alert('Account', 'Account management features coming soon!');
+            }}
+          >
+            <View style={styles.userIcon}>
+              <Ionicons name="person" size={24} color="#fff" />
+            </View>
+            <View style={styles.settingInfo}>
+              <View>
+                <Text style={styles.settingLabel}>
+                  {typeof user.name === 'string' ? user.name : user.name?.full || user.name?.first || 'User'}
+                </Text>
+                <Text style={styles.settingDescription}>{user.email}</Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color="#ccc" />
+          </TouchableOpacity>
+        </View>
+
+        {/* About Noted */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>About Noted</Text>
+          
+          {/* App Title and Version */}
+          <View style={[styles.settingItem, styles.firstSettingItem]}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="document-text" size={20} color="#ffc107" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Noted</Text>
+                <Text style={styles.settingDescription}>Version {Constants.expoConfig?.version || '1.0.0'}</Text>
+              </View>
+            </View>
           </View>
-          <View style={styles.userInfo}>
-            <Text style={styles.userName}>
-              {typeof user.name === 'string' ? user.name : user.name?.full || user.name?.first || 'User'}
-            </Text>
-            <Text style={styles.userEmail}>{user.email}</Text>
+
+          {/* Build Info */}
+          <View style={styles.settingItem}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="hammer" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Build</Text>
+                <Text style={styles.settingDescription}>
+                  {typeof Constants.expoConfig?.runtimeVersion === 'string' 
+                    ? Constants.expoConfig.runtimeVersion 
+                    : 'Development'}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Platform Info */}
+          <View style={styles.settingItem}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="phone-portrait" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Platform</Text>
+                <Text style={styles.settingDescription}>
+                  {Constants.platform?.ios ? 'iOS' : Constants.platform?.android ? 'Android' : 'Web'}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Expo SDK */}
+          <View style={styles.settingItem}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="code-slash" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Expo SDK</Text>
+                <Text style={styles.settingDescription}>{Constants.expoVersion || 'Unknown'}</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Notes Count */}
+          <View style={[styles.settingItem, styles.lastSettingItem]}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="documents" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Your Notes</Text>
+                <Text style={styles.settingDescription}>{notes.length} notes created</Text>
+              </View>
+            </View>
           </View>
         </View>
 
-        {/* App Info */}
+        {/* Support & Feedback */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About Noted</Text>
-          <View style={styles.infoCard}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-              {(() => {
-                const IconComponent = Ionicons as any;
-                return (
-                  <IconComponent
-                    name="document-text"
-                    size={18}
-                    color="#ffc107"
-                    style={{ marginRight: 8 }}
-                  />
-                );
-              })()}
-              <Text style={styles.appName}>Noted</Text>
+          <Text style={styles.sectionTitle}>Support & Feedback</Text>
+          
+          <TouchableOpacity 
+            style={[styles.settingItem, styles.firstSettingItem]}
+            onPress={() => {
+              Alert.alert(
+                'Help & Support',
+                'For help and support, please contact us at support@noted.app or visit our documentation.',
+                [{ text: 'OK' }]
+              );
+            }}
+          >
+            <View style={styles.settingInfo}>
+              <Ionicons name="help-circle" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Help & Support</Text>
+                <Text style={styles.settingDescription}>Get help and documentation</Text>
+              </View>
             </View>
-            <Text style={styles.appDescription}>
-              A simple and elegant note-taking app powered by Oxy services.
-              Create, edit, and organize your thoughts seamlessly.
-            </Text>
-          </View>
+            <Ionicons name="chevron-forward" size={16} color="#ccc" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.settingItem}
+            onPress={() => {
+              Alert.alert(
+                'Send Feedback',
+                'We\'d love to hear from you! Your feedback helps us improve Noted.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  { 
+                    text: 'Send Feedback', 
+                    onPress: () => {
+                      // Here you could implement actual feedback functionality
+                      Alert.alert('Thank you!', 'Your feedback is valuable to us.');
+                    }
+                  }
+                ]
+              );
+            }}
+          >
+            <View style={styles.settingInfo}>
+              <Ionicons name="chatbubble" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Send Feedback</Text>
+                <Text style={styles.settingDescription}>Share your thoughts and suggestions</Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color="#ccc" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.settingItem, styles.lastSettingItem]}
+            onPress={() => {
+              Alert.alert(
+                'Rate Noted',
+                'Enjoying Noted? Please rate us on the App Store!',
+                [
+                  { text: 'Maybe Later', style: 'cancel' },
+                  { 
+                    text: 'Rate Now', 
+                    onPress: () => {
+                      // Here you could implement app store rating
+                      Alert.alert('Thank you!', 'Redirecting to App Store...');
+                    }
+                  }
+                ]
+              );
+            }}
+          >
+            <View style={styles.settingInfo}>
+              <Ionicons name="star" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Rate Noted</Text>
+                <Text style={styles.settingDescription}>Rate us on the App Store</Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color="#ccc" />
+          </TouchableOpacity>
         </View>
 
         {/* App Preferences */}
@@ -177,8 +303,9 @@ export default function SettingsScreen() {
             <Switch
               value={notifications}
               onValueChange={setNotifications}
-              trackColor={{ false: '#e0e0e0', true: '#ffc107' }}
-              thumbColor={notifications ? '#fff' : '#fff'}
+              trackColor={{ false: '#f0f0f0', true: '#34d399' }}
+              thumbColor={notifications ? '#ffffff' : '#d1d5db'}
+              ios_backgroundColor="#f0f0f0"
             />
           </View>
 
@@ -193,8 +320,9 @@ export default function SettingsScreen() {
             <Switch
               value={darkMode}
               onValueChange={setDarkMode}
-              trackColor={{ false: '#e0e0e0', true: '#ffc107' }}
-              thumbColor={darkMode ? '#fff' : '#fff'}
+              trackColor={{ false: '#f0f0f0', true: '#6366f1' }}
+              thumbColor={darkMode ? '#ffffff' : '#d1d5db'}
+              ios_backgroundColor="#f0f0f0"
             />
           </View>
 
@@ -209,8 +337,9 @@ export default function SettingsScreen() {
             <Switch
               value={autoSync}
               onValueChange={setAutoSync}
-              trackColor={{ false: '#e0e0e0', true: '#ffc107' }}
-              thumbColor={autoSync ? '#fff' : '#fff'}
+              trackColor={{ false: '#f0f0f0', true: '#10b981' }}
+              thumbColor={autoSync ? '#ffffff' : '#d1d5db'}
+              ios_backgroundColor="#f0f0f0"
             />
           </View>
 
@@ -225,8 +354,9 @@ export default function SettingsScreen() {
             <Switch
               value={offlineMode}
               onValueChange={setOfflineMode}
-              trackColor={{ false: '#e0e0e0', true: '#ffc107' }}
-              thumbColor={offlineMode ? '#fff' : '#fff'}
+              trackColor={{ false: '#f0f0f0', true: '#f59e0b' }}
+              thumbColor={offlineMode ? '#ffffff' : '#d1d5db'}
+              ios_backgroundColor="#f0f0f0"
             />
           </View>
         </View>
@@ -236,20 +366,30 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           
           <TouchableOpacity 
-            style={[styles.actionButton, styles.firstSettingItem]}
+            style={[styles.settingItem, styles.firstSettingItem]}
             onPress={() => router.push('/create-note')}
           >
-            <Ionicons name="add" size={20} color="#666" style={styles.settingIcon} />
-            <Text style={styles.actionText}>Create New Note</Text>
+            <View style={styles.settingInfo}>
+              <Ionicons name="add" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Create New Note</Text>
+                <Text style={styles.settingDescription}>Start writing a new note</Text>
+              </View>
+            </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={[styles.actionButton, styles.lastSettingItem]}
+            style={[styles.settingItem, styles.lastSettingItem]}
             onPress={() => router.push('/search')}
           >
-            <Ionicons name="search" size={20} color="#666" style={styles.settingIcon} />
-            <Text style={styles.actionText}>Search Notes</Text>
+            <View style={styles.settingInfo}>
+              <Ionicons name="search" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Search Notes</Text>
+                <Text style={styles.settingDescription}>Find notes by title or content</Text>
+              </View>
+            </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
           </TouchableOpacity>
         </View>
@@ -259,20 +399,30 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>Data</Text>
           
           <TouchableOpacity 
-            style={[styles.actionButton, styles.firstSettingItem]}
+            style={[styles.settingItem, styles.firstSettingItem]}
             onPress={handleExportData}
           >
-            <Ionicons name="download" size={20} color="#666" style={styles.settingIcon} />
-            <Text style={styles.actionText}>Export Notes</Text>
+            <View style={styles.settingInfo}>
+              <Ionicons name="download" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Export Notes</Text>
+                <Text style={styles.settingDescription}>Download your notes as backup</Text>
+              </View>
+            </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={[styles.actionButton, styles.lastSettingItem]}
+            style={[styles.settingItem, styles.lastSettingItem]}
             onPress={handleClearCache}
           >
-            <Ionicons name="trash" size={20} color="#ff4757" style={styles.settingIcon} />
-            <Text style={[styles.actionText, { color: '#ff4757' }]}>Clear Cache</Text>
+            <View style={styles.settingInfo}>
+              <Ionicons name="trash" size={20} color="#ff4757" style={styles.settingIcon} />
+              <View>
+                <Text style={[styles.settingLabel, { color: '#ff4757' }]}>Clear Cache</Text>
+                <Text style={styles.settingDescription}>Remove cached data from device</Text>
+              </View>
+            </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
           </TouchableOpacity>
         </View>
@@ -280,13 +430,26 @@ export default function SettingsScreen() {
         {/* Sign Out */}
         <View style={styles.section}>
           <TouchableOpacity 
-            style={styles.signOutButton}
+            style={[styles.settingItem, styles.firstSettingItem, styles.lastSettingItem, styles.signOutButton]}
             onPress={handleSignOut}
           >
-            <Text style={styles.signOutText}>Sign Out</Text>
+            <View style={styles.settingInfo}>
+              <Ionicons name="log-out" size={20} color="#ff4757" style={styles.settingIcon} />
+              <View>
+                <Text style={[styles.settingLabel, { color: '#ff4757' }]}>Sign Out</Text>
+                <Text style={styles.settingDescription}>Sign out of your account</Text>
+              </View>
+            </View>
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Export Modal */}
+      <ExportNotesModal
+        visible={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        notes={notes}
+      />
     </View>
   );
 }
@@ -294,7 +457,6 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fafafa',
   },
   header: {
     paddingHorizontal: 20,
@@ -307,46 +469,20 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#000',
   },
   content: {
     flex: 1,
     paddingHorizontal: 16,
   },
-  userCard: {
-    padding: 24,
-    marginTop: 16,
-    marginBottom: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   userIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#ffc107',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
-  },
-  userIconText: {
-    fontSize: 24,
-    color: '#fff',
-  },
-  userInfo: {
-    alignItems: 'center',
-  },
-  userName: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  userEmail: {
-    fontSize: 15,
-    color: '#666',
-    textAlign: 'center',
+    marginRight: 12,
   },
   section: {
     marginBottom: 24,
@@ -357,65 +493,18 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 12,
   },
-  infoCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  appName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  appDescription: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  actionButton: {
-    backgroundColor: '#fff',
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 1,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
   settingItem: {
     backgroundColor: '#fff',
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 1,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    marginBottom: 2,
   },
   firstSettingItem: {
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    marginBottom: 1,
+    marginBottom: 2,
   },
   lastSettingItem: {
     borderBottomLeftRadius: 24,
@@ -440,32 +529,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
-  actionText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
-    marginLeft: 4,
-  },
   signOutButton: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ff4757',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  signOutText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#ff4757',
   },
   authPrompt: {
     flex: 1,
