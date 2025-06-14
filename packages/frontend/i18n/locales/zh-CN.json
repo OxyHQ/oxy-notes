@@ -100,5 +100,16 @@
     "noMatchingSubtitle": "尝试调整您的搜索",
     "syncing": "同步中... {{progress}}%",
     "createFirst": "创建您的第一条笔记"
+  },
+  "profile": {
+    "title": "个人资料",
+    "signInPrompt": "请登录以查看您的个人资料",
+    "aboutNoted": "关于 Noted",
+    "appDescription": "一个由 Oxy 服务支持的简单优雅的笔记应用。无缝地创建、编辑和组织您的想法。",
+    "actions": "操作",
+    "createNote": "创建新笔记",
+    "searchNotes": "搜索笔记",
+    "signOut": "登出",
+    "signOutConfirm": "您确定要登出吗？"
   }
 }

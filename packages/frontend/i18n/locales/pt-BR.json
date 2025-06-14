@@ -100,5 +100,16 @@
     "noMatchingSubtitle": "Tente ajustar sua busca",
     "syncing": "Sincronizando... {{progress}}%",
     "createFirst": "Crie sua primeira nota"
+  },
+  "profile": {
+    "title": "Perfil",
+    "signInPrompt": "Por favor, faça login para ver seu perfil",
+    "aboutNoted": "Sobre o Noted",
+    "appDescription": "Um aplicativo simples e elegante para anotações alimentado pelos serviços Oxy. Crie, edite e organize seus pensamentos perfeitamente.",
+    "actions": "Ações",
+    "createNote": "Criar Nova Nota",
+    "searchNotes": "Buscar Notas",
+    "signOut": "Sair",
+    "signOutConfirm": "Tem certeza de que deseja sair?"
   }
 }

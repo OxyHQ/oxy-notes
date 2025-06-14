@@ -100,5 +100,16 @@
     "noMatchingSubtitle": "Versuchen Sie, Ihre Suche anzupassen",
     "syncing": "Synchronisiere... {{progress}}%",
     "createFirst": "Erstellen Sie Ihre erste Notiz"
+  },
+  "profile": {
+    "title": "Profil",
+    "signInPrompt": "Bitte melden Sie sich an, um Ihr Profil anzuzeigen",
+    "aboutNoted": "Über Noted",
+    "appDescription": "Eine einfache und elegante Notizen-App, die von Oxy-Diensten unterstützt wird. Erstellen, bearbeiten und organisieren Sie Ihre Gedanken nahtlos.",
+    "actions": "Aktionen",
+    "createNote": "Neue Notiz Erstellen",
+    "searchNotes": "Notizen Suchen",
+    "signOut": "Abmelden",
+    "signOutConfirm": "Sind Sie sicher, dass Sie sich abmelden möchten?"
   }
 }
