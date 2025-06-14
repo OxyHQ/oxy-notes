@@ -1,16 +1,22 @@
 {
-  "name": "oxy-stack",
+  "name": "oxy-notes",
   "version": "1.0.0",
-  "description": "Oxy Stack - Monorepo for Oxy mobile app and backend services",
+  "description": "Oxy Notes - A beautiful note-taking app with React Native frontend and Node.js backend",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "start": "npm run start --workspace=packages/frontend",
-    "start:backend": "npm run start --workspace=packages/backend",
-    "dev": "concurrently \"npm run start:backend\" \"npm run start\"",
-    "install:all": "npm install && npm install --workspaces",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "frontend": "cd packages/frontend && npm run start --tunnel --reset-cache",
+    "backend": "cd packages/backend && npm run dev",
+    "frontend:build": "cd packages/frontend && npm run build-web",
+    "backend:build": "cd packages/backend && npm run build",
+    "frontend:lint": "cd packages/frontend && npm run lint",
+    "backend:lint": "cd packages/backend && npm run lint",
+    "install:all": "npm install && npm run install:frontend && npm run install:backend",
+    "install:frontend": "cd packages/frontend && npm install",
+    "install:backend": "cd packages/backend && npm install",
     "clean": "npm run clean --workspaces",
     "lint": "npm run lint --workspaces --if-present",
     "build": "npm run build --workspaces --if-present"
