@@ -34,10 +34,10 @@ const tabs: TabItem[] = [
     label: 'Create',
   },
   {
-    name: 'profile',
-    path: '/profile',
-    icon: 'person',
-    label: 'Profile',
+    name: 'settings',
+    path: '/settings',
+    icon: 'settings',
+    label: 'Settings',
   },
 ];
 
@@ -100,28 +100,24 @@ export default function BottomNavigation({ orientation = 'horizontal' }: BottomN
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    borderRadius: 35,
+    margin: 6,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
   horizontalContainer: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    paddingVertical: 8,
+    padding: 8,
   },
   verticalContainer: {
     flexDirection: 'column',
-    height: '100%',
     paddingVertical: 20,
-    borderRightWidth: 1,
-    borderRightColor: '#e0e0e0',
-    shadowOffset: {
-      width: 2,
-      height: 0,
-    },
+    flex: 1,
   },
   tab: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
+    padding: 8,
   },
   horizontalTab: {
     flex: 1,
@@ -136,8 +132,7 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     backgroundColor: 'rgba(255, 193, 7, 0.1)',
-    borderRadius: 12,
-    marginHorizontal: 4,
+    borderRadius: 35,
   },
   verticalActiveTab: {
     backgroundColor: 'rgba(255, 193, 7, 0.1)',

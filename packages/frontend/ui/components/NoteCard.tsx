@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ViewStyle, Animated, Easing, Platform } from 'react-native';
 import { StoredNote } from '../../utils/storage';
 import { Ionicons } from '@expo/vector-icons';

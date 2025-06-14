@@ -56,7 +56,7 @@ export default function RootLayout() {
 
   // Initialize OxyServices
   const oxyServices = new OxyServices({
-    baseURL: Platform.OS === 'web' ? 'https://api.oxy.so' : 'http://10.0.2.2:4000',
+    baseURL: 'https://api.oxy.so',
   });
 
   return (

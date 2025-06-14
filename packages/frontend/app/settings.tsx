@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Switch,
 } from 'react-native';
 import { useOxy } from '@oxyhq/services';
 import { router } from 'expo-router';
@@ -13,6 +14,12 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function SettingsScreen() {
   const { user } = useOxy();
+  
+  // Settings state
+  const [notifications, setNotifications] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
+  const [autoSync, setAutoSync] = useState(true);
+  const [offlineMode, setOfflineMode] = useState(false);
 
   const handleSignOut = () => {
     Alert.alert(
@@ -29,6 +36,47 @@ export default function SettingsScreen() {
           onPress: () => {
             // For now, just navigate back - the actual sign out would depend on Oxy services
             router.replace('/');
+          },
+        },
+      ]
+    );
+  };
+
+  const handleClearCache = () => {
+    Alert.alert(
+      'Clear Cache',
+      'This will remove all cached data from your device. Are you sure?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: () => {
+            // Implementation would clear app cache
+            Alert.alert('Success', 'Cache cleared successfully');
+          },
+        },
+      ]
+    );
+  };
+
+  const handleExportData = () => {
+    Alert.alert(
+      'Export Data',
+      'Your notes will be exported as a backup file.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Export',
+          onPress: () => {
+            // Implementation would export user data
+            Alert.alert('Success', 'Data export started');
           },
         },
       ]
@@ -114,26 +162,118 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Actions */}
+        {/* App Preferences */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Actions</Text>
+          <Text style={styles.sectionTitle}>Preferences</Text>
+          
+          <View style={[styles.settingItem, styles.firstSettingItem]}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="notifications" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Push Notifications</Text>
+                <Text style={styles.settingDescription}>Receive alerts for note reminders</Text>
+              </View>
+            </View>
+            <Switch
+              value={notifications}
+              onValueChange={setNotifications}
+              trackColor={{ false: '#e0e0e0', true: '#ffc107' }}
+              thumbColor={notifications ? '#fff' : '#fff'}
+            />
+          </View>
+
+          <View style={styles.settingItem}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="moon" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Dark Mode</Text>
+                <Text style={styles.settingDescription}>Use dark theme</Text>
+              </View>
+            </View>
+            <Switch
+              value={darkMode}
+              onValueChange={setDarkMode}
+              trackColor={{ false: '#e0e0e0', true: '#ffc107' }}
+              thumbColor={darkMode ? '#fff' : '#fff'}
+            />
+          </View>
+
+          <View style={styles.settingItem}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="sync" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Auto Sync</Text>
+                <Text style={styles.settingDescription}>Automatically sync notes across devices</Text>
+              </View>
+            </View>
+            <Switch
+              value={autoSync}
+              onValueChange={setAutoSync}
+              trackColor={{ false: '#e0e0e0', true: '#ffc107' }}
+              thumbColor={autoSync ? '#fff' : '#fff'}
+            />
+          </View>
+
+          <View style={[styles.settingItem, styles.lastSettingItem]}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="cloud-offline" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>Offline Mode</Text>
+                <Text style={styles.settingDescription}>Work without internet connection</Text>
+              </View>
+            </View>
+            <Switch
+              value={offlineMode}
+              onValueChange={setOfflineMode}
+              trackColor={{ false: '#e0e0e0', true: '#ffc107' }}
+              thumbColor={offlineMode ? '#fff' : '#fff'}
+            />
+          </View>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
           
           <TouchableOpacity 
-            style={styles.actionButton}
+            style={[styles.actionButton, styles.firstSettingItem]}
             onPress={() => router.push('/create-note')}
           >
-            <Text style={styles.actionIcon}>➕</Text>
+            <Ionicons name="add" size={20} color="#666" style={styles.settingIcon} />
             <Text style={styles.actionText}>Create New Note</Text>
-            <Text style={styles.actionArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={16} color="#ccc" />
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={styles.actionButton}
+            style={[styles.actionButton, styles.lastSettingItem]}
             onPress={() => router.push('/search')}
           >
-            <Text style={styles.actionIcon}>🔍</Text>
+            <Ionicons name="search" size={20} color="#666" style={styles.settingIcon} />
             <Text style={styles.actionText}>Search Notes</Text>
-            <Text style={styles.actionArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={16} color="#ccc" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Data Management */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Data</Text>
+          
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.firstSettingItem]}
+            onPress={handleExportData}
+          >
+            <Ionicons name="download" size={20} color="#666" style={styles.settingIcon} />
+            <Text style={styles.actionText}>Export Notes</Text>
+            <Ionicons name="chevron-forward" size={16} color="#ccc" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.lastSettingItem]}
+            onPress={handleClearCache}
+          >
+            <Ionicons name="trash" size={20} color="#ff4757" style={styles.settingIcon} />
+            <Text style={[styles.actionText, { color: '#ff4757' }]}>Clear Cache</Text>
+            <Ionicons name="chevron-forward" size={16} color="#ccc" />
           </TouchableOpacity>
         </View>
 
@@ -243,11 +383,10 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     backgroundColor: '#fff',
-    borderRadius: 12,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 1,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -257,18 +396,55 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  actionIcon: {
-    fontSize: 20,
+  settingItem: {
+    backgroundColor: '#fff',
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 1,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  firstSettingItem: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    marginBottom: 1,
+  },
+  lastSettingItem: {
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    marginBottom: 8,
+  },
+  settingInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  settingIcon: {
     marginRight: 12,
+  },
+  settingLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 2,
+  },
+  settingDescription: {
+    fontSize: 14,
+    color: '#666',
   },
   actionText: {
     flex: 1,
     fontSize: 16,
     color: '#333',
-  },
-  actionArrow: {
-    fontSize: 20,
-    color: '#ccc',
+    marginLeft: 4,
   },
   signOutButton: {
     backgroundColor: '#fff',
