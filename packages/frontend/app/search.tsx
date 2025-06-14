@@ -7,12 +7,15 @@ import {
   StyleSheet,
   TextInput,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { useOxy } from '@oxyhq/services';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { notesApi, Note } from '../utils/api';
 import NoteCard from '../ui/components/NoteCard';
+import { syncManager } from '../utils/syncManager';
+import { StoredNote } from '../utils/storage';
 
 // Create StoredNote adapter from server Note
 const adaptNoteToStoredFormat = (note: Note) => {
@@ -71,10 +74,54 @@ export default function SearchScreen() {
   }, [searchQuery, allNotes]);
 
   const openNote = (note: Note) => {
-    router.push({
-      pathname: '/edit-note',
-      params: { noteId: note.id }
-    });
+    console.log('Opening note:', note);
+    
+    if (!note || !note.id) {
+      console.error('Invalid note object:', note);
+      Alert.alert('Error', 'Cannot open invalid note');
+      return;
+    }
+    
+    // First, try to find the note in offline storage to get the localId
+    try {
+      // We'll need to check if this note exists locally and get its localId
+      syncManager.getNoteById(note.id)
+        .then((localNote) => {
+          if (localNote) {
+            console.log('Found local note with localId:', localNote.localId);
+            router.push({
+              pathname: '/edit-note',
+              params: { noteId: localNote.localId }
+            });
+          } else {
+            // If not found locally, we need to create a local copy from the server note
+            console.log('Note not found locally, creating local version from server note');
+            // Create a note with the same content
+            syncManager.createNote({
+                title: note.title,
+                content: note.content,
+                color: note.color
+              })
+              .then((createdNote) => {
+                router.push({
+                  pathname: '/edit-note',
+                  params: { noteId: createdNote.localId }
+                });
+              })
+              .catch((error: Error) => {
+                console.error('Failed to create local copy of server note:', error);
+                Alert.alert('Error', 'Failed to open note');
+              });
+          }
+        })
+        .catch((error: Error) => {
+          console.error('Error checking for local note:', error);
+          Alert.alert('Error', 'Failed to open note');
+        });
+    } catch (error) {
+      console.error('Error opening note:', error);
+      Alert.alert('Error', 'Failed to open note');
+    }
   };
 
   const renderNote = (note: Note) => {
@@ -89,6 +136,8 @@ export default function SearchScreen() {
         note={adaptNoteToStoredFormat(note)}
         onPress={() => openNote(note)}
         containerStyle={{ width: itemWidth }}
+        limitContentLines={4}
+        searchQuery={searchQuery}
       />
     );
   };

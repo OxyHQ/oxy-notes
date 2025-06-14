@@ -73,6 +73,7 @@ export default function NotesScreen() {
         note={note}
         onPress={() => openNote(note)}
         onLongPress={() => handleDeleteNote(note)}
+        searchQuery={searchQuery}
       />
     );
   };
@@ -301,6 +302,7 @@ export default function NotesScreen() {
                 note={note}
                 onPress={() => openNote(note)}
                 onLongPress={() => handleDeleteNote(note)}
+                searchQuery={searchQuery}
               />
             ))}
           </View>
@@ -432,8 +434,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#e3f2fd',
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    margin: 8,
+    borderRadius: 35,
   },
   syncStatusText: {
     fontSize: 14,
