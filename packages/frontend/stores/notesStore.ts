@@ -51,10 +51,12 @@ export const useNotesStore = create<NotesState>((set, get) => ({
   // Load notes from storage
   loadNotes: async () => {
     try {
+      console.log('Loading notes from storage...');
       set({ isLoading: true });
       const storedNotes = await syncManager.getAllNotes();
       const pendingCount = await syncManager.getPendingSyncCount();
       
+      console.log(`Loaded ${storedNotes.length} notes, ${pendingCount} pending sync`);
       set({ 
         notes: storedNotes, 
         pendingSyncCount: pendingCount 
@@ -150,17 +152,23 @@ export const useNotesStore = create<NotesState>((set, get) => ({
   initialize: () => {
     const state = get();
     
-    // Don't initialize if already initialized
+    // Prevent multiple initializations
     if (state.cleanup !== get().cleanup) {
+      console.log('Store already initialized, skipping...');
       return;
     }
 
+    console.log('Initializing notes store...');
+
     // Set up sync status listener
     const handleSyncStatus = (status: SyncStatus) => {
+      console.log('Sync status changed:', status);
       set({ syncStatus: status });
       if (status.status === 'completed') {
         // Reload notes after successful sync
-        get().loadNotes();
+        get().loadNotes().catch((error) => {
+          console.error('Failed to reload notes after sync:', error);
+        });
       }
     };
 
@@ -168,8 +176,16 @@ export const useNotesStore = create<NotesState>((set, get) => ({
 
     // Update network status
     const updateNetworkStatus = () => {
-      const isOnline = syncManager.getNetworkStatus();
-      set({ isOnline });
+      try {
+        const isOnline = syncManager.getNetworkStatus();
+        const currentOnline = get().isOnline;
+        if (isOnline !== currentOnline) {
+          console.log('Network status changed:', isOnline ? 'online' : 'offline');
+          set({ isOnline });
+        }
+      } catch (error) {
+        console.error('Error updating network status:', error);
+      }
     };
 
     // Initial network status
@@ -180,6 +196,7 @@ export const useNotesStore = create<NotesState>((set, get) => ({
 
     // Create cleanup function
     const cleanupFn = () => {
+      console.log('Cleaning up notes store...');
       syncManager.removeSyncListener(handleSyncStatus);
       clearInterval(networkInterval);
     };
@@ -188,7 +205,9 @@ export const useNotesStore = create<NotesState>((set, get) => ({
     set({ cleanup: cleanupFn });
 
     // Initial load
-    get().loadNotes();
+    get().loadNotes().catch((error) => {
+      console.error('Failed to load initial notes:', error);
+    });
   },
 
   // Cleanup (remove listeners, etc.)
