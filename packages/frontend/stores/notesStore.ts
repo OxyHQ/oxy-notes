@@ -153,12 +153,13 @@ export const useNotesStore = create<NotesState>((set, get) => ({
     const state = get();
     
     // Prevent multiple initializations
-    if (state.cleanup !== get().cleanup) {
+    if (state.isInitialized) {
       console.log('Store already initialized, skipping...');
       return;
     }
 
     console.log('Initializing notes store...');
+    set({ isInitialized: true }); // Mark as initialized
 
     // Set up sync status listener
     const handleSyncStatus = (status: SyncStatus) => {
