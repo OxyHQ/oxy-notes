@@ -1,0 +1,104 @@
+{
+  "settings": {
+    "title": "设置",
+    "signInPrompt": "请登录以查看您的设置",
+    "sections": {
+      "account": "账户",
+      "aboutNoted": "关于 Noted",
+      "supportFeedback": "支持与反馈",
+      "preferences": "偏好设置",
+      "quickActions": "快速操作",
+      "data": "数据",
+      "language": "语言"
+    },
+    "account": {
+      "manageAccount": "账户管理功能即将推出！"
+    },
+    "aboutNoted": {
+      "appName": "Noted",
+      "version": "版本 {{version}}",
+      "build": "构建",
+      "buildVersion": "开发版",
+      "platform": "平台",
+      "expoSDK": "Expo SDK",
+      "notesCount": "您的笔记",
+      "notesCountDesc": "已创建 {{count}} 条笔记"
+    },
+    "supportFeedback": {
+      "helpSupport": "帮助与支持",
+      "helpSupportDesc": "获取帮助和文档",
+      "helpSupportMessage": "如需帮助和支持，请通过 support@noted.app 联系我们或访问我们的文档。",
+      "sendFeedback": "发送反馈",
+      "sendFeedbackDesc": "分享您的想法和建议",
+      "sendFeedbackMessage": "我们很想听到您的声音！您的反馈有助于我们改进 Noted。",
+      "sendFeedbackThankYou": "谢谢！您的反馈对我们很有价值。",
+      "rateApp": "评价 Noted",
+      "rateAppDesc": "在 App Store 中为我们评分",
+      "rateAppMessage": "喜欢 Noted 吗？请在 App Store 中为我们评分！",
+      "rateAppThankYou": "谢谢！正在跳转到 App Store..."
+    },
+    "preferences": {
+      "notifications": "推送通知",
+      "notificationsDesc": "接收笔记提醒的通知",
+      "darkMode": "深色模式",
+      "darkModeDesc": "使用深色主题",
+      "autoSync": "自动同步",
+      "autoSyncDesc": "自动在设备间同步笔记",
+      "offlineMode": "离线模式",
+      "offlineModeDesc": "在没有网络连接时工作",
+      "language": "语言",
+      "languageDesc": "更改应用语言"
+    },
+    "quickActions": {
+      "createNote": "创建新笔记",
+      "createNoteDesc": "开始写一条新笔记",
+      "searchNotes": "搜索笔记",
+      "searchNotesDesc": "按标题或内容查找笔记"
+    },
+    "data": {
+      "exportNotes": "导出笔记",
+      "exportNotesDesc": "下载您的笔记作为备份",
+      "clearCache": "清除缓存",
+      "clearCacheDesc": "从设备中删除缓存数据",
+      "clearCacheMessage": "这将从您的设备中删除所有缓存数据。您确定吗？",
+      "clearCacheSuccess": "缓存清除成功",
+      "noNotesToExport": "没有笔记可导出",
+      "noNotesToExportMessage": "您还没有笔记可以导出。请先创建一些笔记。"
+    },
+    "signOut": "登出",
+    "signOutDesc": "登出您的账户",
+    "signOutMessage": "您确定要登出吗？",
+    "languageSelection": {
+      "title": "选择语言",
+      "current": "当前：{{language}}"
+    }
+  },
+  "common": {
+    "ok": "确定",
+    "cancel": "取消",
+    "save": "保存",
+    "yes": "是",
+    "no": "否",
+    "maybeLater": "稍后再说",
+    "rateNow": "立即评分",
+    "sendFeedback": "发送反馈",
+    "clear": "清除",
+    "success": "成功"
+  },
+  "navigation": {
+    "home": "首页",
+    "settings": "设置",
+    "profile": "个人资料",
+    "search": "搜索",
+    "newNote": "新笔记"
+  },
+  "notes": {
+    "searchPlaceholder": "搜索笔记...",
+    "noNotes": "还没有笔记",
+    "noNotesSubtitle": "点击 + 按钮创建您的第一条笔记",
+    "noMatching": "没有匹配的笔记",
+    "noMatchingSubtitle": "尝试调整您的搜索",
+    "syncing": "同步中... {{progress}}%",
+    "createFirst": "创建您的第一条笔记"
+  }
+}

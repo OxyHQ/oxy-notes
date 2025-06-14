@@ -1,0 +1,104 @@
+{
+  "settings": {
+    "title": "Paramètres",
+    "signInPrompt": "Veuillez vous connecter pour voir vos paramètres",
+    "sections": {
+      "account": "Compte",
+      "aboutNoted": "À propos de Noted",
+      "supportFeedback": "Support et Commentaires",
+      "preferences": "Préférences",
+      "quickActions": "Actions Rapides",
+      "data": "Données",
+      "language": "Langue"
+    },
+    "account": {
+      "manageAccount": "Les fonctionnalités de gestion de compte arrivent bientôt !"
+    },
+    "aboutNoted": {
+      "appName": "Noted",
+      "version": "Version {{version}}",
+      "build": "Build",
+      "buildVersion": "Développement",
+      "platform": "Plateforme",
+      "expoSDK": "Expo SDK",
+      "notesCount": "Vos Notes",
+      "notesCountDesc": "{{count}} notes créées"
+    },
+    "supportFeedback": {
+      "helpSupport": "Aide et Support",
+      "helpSupportDesc": "Obtenir de l'aide et la documentation",
+      "helpSupportMessage": "Pour l'aide et le support, veuillez nous contacter à support@noted.app ou visiter notre documentation.",
+      "sendFeedback": "Envoyer des Commentaires",
+      "sendFeedbackDesc": "Partagez vos pensées et suggestions",
+      "sendFeedbackMessage": "Nous aimerions avoir de vos nouvelles ! Vos commentaires nous aident à améliorer Noted.",
+      "sendFeedbackThankYou": "Merci ! Vos commentaires nous sont précieux.",
+      "rateApp": "Évaluer Noted",
+      "rateAppDesc": "Évaluez-nous sur l'App Store",
+      "rateAppMessage": "Vous appréciez Noted ? Veuillez nous évaluer sur l'App Store !",
+      "rateAppThankYou": "Merci ! Redirection vers l'App Store..."
+    },
+    "preferences": {
+      "notifications": "Notifications Push",
+      "notificationsDesc": "Recevoir des alertes pour les rappels de notes",
+      "darkMode": "Mode Sombre",
+      "darkModeDesc": "Utiliser le thème sombre",
+      "autoSync": "Synchronisation Automatique",
+      "autoSyncDesc": "Synchroniser automatiquement les notes entre appareils",
+      "offlineMode": "Mode Hors Ligne",
+      "offlineModeDesc": "Travailler sans connexion internet",
+      "language": "Langue",
+      "languageDesc": "Changer la langue de l'application"
+    },
+    "quickActions": {
+      "createNote": "Créer une Nouvelle Note",
+      "createNoteDesc": "Commencer à écrire une nouvelle note",
+      "searchNotes": "Rechercher des Notes",
+      "searchNotesDesc": "Trouver des notes par titre ou contenu"
+    },
+    "data": {
+      "exportNotes": "Exporter les Notes",
+      "exportNotesDesc": "Télécharger vos notes comme sauvegarde",
+      "clearCache": "Vider le Cache",
+      "clearCacheDesc": "Supprimer les données en cache de l'appareil",
+      "clearCacheMessage": "Cela supprimera toutes les données en cache de votre appareil. Êtes-vous sûr ?",
+      "clearCacheSuccess": "Cache vidé avec succès",
+      "noNotesToExport": "Aucune Note à Exporter",
+      "noNotesToExportMessage": "Vous n'avez pas encore de notes à exporter. Créez d'abord quelques notes."
+    },
+    "signOut": "Se Déconnecter",
+    "signOutDesc": "Se déconnecter de votre compte",
+    "signOutMessage": "Êtes-vous sûr de vouloir vous déconnecter ?",
+    "languageSelection": {
+      "title": "Sélectionner la Langue",
+      "current": "Actuel : {{language}}"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "yes": "Oui",
+    "no": "Non",
+    "maybeLater": "Peut-être plus tard",
+    "rateNow": "Évaluer maintenant",
+    "sendFeedback": "Envoyer des commentaires",
+    "clear": "Vider",
+    "success": "Succès"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "settings": "Paramètres",
+    "profile": "Profil",
+    "search": "Rechercher",
+    "newNote": "Nouvelle Note"
+  },
+  "notes": {
+    "searchPlaceholder": "Rechercher des notes...",
+    "noNotes": "Pas encore de notes",
+    "noNotesSubtitle": "Appuyez sur le bouton + pour créer votre première note",
+    "noMatching": "Aucune note correspondante",
+    "noMatchingSubtitle": "Essayez d'ajuster votre recherche",
+    "syncing": "Synchronisation... {{progress}}%",
+    "createFirst": "Créez votre première note"
+  }
+}

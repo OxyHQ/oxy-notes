@@ -2,12 +2,13 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 interface TabItem {
   name: string;
   path: string;
   icon: string;
-  label: string;
+  labelKey: string;
 }
 
 interface BottomNavigationProps {
@@ -19,24 +20,25 @@ const tabs: TabItem[] = [
     name: 'notes',
     path: '/',
     icon: 'document-text',
-    label: 'Notes',
+    labelKey: 'navigation.home',
   },
   {
     name: 'search',
     path: '/search',
     icon: 'search',
-    label: 'Search',
+    labelKey: 'navigation.search',
   },
   {
     name: 'settings',
     path: '/settings',
     icon: 'settings',
-    label: 'Settings',
+    labelKey: 'navigation.settings',
   },
 ];
 
 export default function BottomNavigation({ orientation = 'horizontal' }: BottomNavigationProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const handleTabPress = (path: string) => {
     if (pathname !== path) {
@@ -83,7 +85,7 @@ export default function BottomNavigation({ orientation = 'horizontal' }: BottomN
             isActive(tab.path) && styles.activeLabel,
             orientation === 'vertical' ? styles.verticalLabel : {},
           ]}>
-            {tab.label}
+            {t(tab.labelKey)}
           </Text>
         </TouchableOpacity>
       ))}
@@ -113,7 +115,7 @@ export default function BottomNavigation({ orientation = 'horizontal' }: BottomN
               {color: '#fff', fontSize: 12, fontWeight: '500'},
               orientation === 'vertical' ? styles.verticalLabel : {},
             ]}>
-              {'New Note'}
+              {t('navigation.newNote')}
             </Text>
             )}
         </TouchableOpacity>

@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { OxyProvider, OxyServices } from '@oxyhq/services';
 import BottomNavigation from '../ui/components/navigation/BottomNavigation';
 import NotesScreen from './index';
+import '../i18n'; // Initialize i18n
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

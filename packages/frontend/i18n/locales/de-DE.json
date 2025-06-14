@@ -1,0 +1,104 @@
+{
+  "settings": {
+    "title": "Einstellungen",
+    "signInPrompt": "Bitte melden Sie sich an, um Ihre Einstellungen anzuzeigen",
+    "sections": {
+      "account": "Konto",
+      "aboutNoted": "Über Noted",
+      "supportFeedback": "Support & Feedback",
+      "preferences": "Einstellungen",
+      "quickActions": "Schnellaktionen",
+      "data": "Daten",
+      "language": "Sprache"
+    },
+    "account": {
+      "manageAccount": "Kontoverwaltungsfunktionen kommen bald!"
+    },
+    "aboutNoted": {
+      "appName": "Noted",
+      "version": "Version {{version}}",
+      "build": "Build",
+      "buildVersion": "Entwicklung",
+      "platform": "Plattform",
+      "expoSDK": "Expo SDK",
+      "notesCount": "Ihre Notizen",
+      "notesCountDesc": "{{count}} Notizen erstellt"
+    },
+    "supportFeedback": {
+      "helpSupport": "Hilfe & Support",
+      "helpSupportDesc": "Hilfe und Dokumentation erhalten",
+      "helpSupportMessage": "Für Hilfe und Support kontaktieren Sie uns bitte unter support@noted.app oder besuchen Sie unsere Dokumentation.",
+      "sendFeedback": "Feedback Senden",
+      "sendFeedbackDesc": "Teilen Sie Ihre Gedanken und Vorschläge mit",
+      "sendFeedbackMessage": "Wir würden gerne von Ihnen hören! Ihr Feedback hilft uns, Noted zu verbessern.",
+      "sendFeedbackThankYou": "Vielen Dank! Ihr Feedback ist wertvoll für uns.",
+      "rateApp": "Noted Bewerten",
+      "rateAppDesc": "Bewerten Sie uns im App Store",
+      "rateAppMessage": "Gefällt Ihnen Noted? Bitte bewerten Sie uns im App Store!",
+      "rateAppThankYou": "Vielen Dank! Weiterleitung zum App Store..."
+    },
+    "preferences": {
+      "notifications": "Push-Benachrichtigungen",
+      "notificationsDesc": "Benachrichtigungen für Notizenreminder erhalten",
+      "darkMode": "Dunkler Modus",
+      "darkModeDesc": "Dunkles Design verwenden",
+      "autoSync": "Automatische Synchronisation",
+      "autoSyncDesc": "Notizen automatisch zwischen Geräten synchronisieren",
+      "offlineMode": "Offline-Modus",
+      "offlineModeDesc": "Ohne Internetverbindung arbeiten",
+      "language": "Sprache",
+      "languageDesc": "App-Sprache ändern"
+    },
+    "quickActions": {
+      "createNote": "Neue Notiz Erstellen",
+      "createNoteDesc": "Eine neue Notiz zu schreiben beginnen",
+      "searchNotes": "Notizen Suchen",
+      "searchNotesDesc": "Notizen nach Titel oder Inhalt finden"
+    },
+    "data": {
+      "exportNotes": "Notizen Exportieren",
+      "exportNotesDesc": "Ihre Notizen als Backup herunterladen",
+      "clearCache": "Cache Leeren",
+      "clearCacheDesc": "Zwischengespeicherte Daten vom Gerät entfernen",
+      "clearCacheMessage": "Dies entfernt alle zwischengespeicherten Daten von Ihrem Gerät. Sind Sie sicher?",
+      "clearCacheSuccess": "Cache erfolgreich geleert",
+      "noNotesToExport": "Keine Notizen zum Exportieren",
+      "noNotesToExportMessage": "Sie haben noch keine Notizen zum Exportieren. Erstellen Sie zuerst einige Notizen."
+    },
+    "signOut": "Abmelden",
+    "signOutDesc": "Von Ihrem Konto abmelden",
+    "signOutMessage": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+    "languageSelection": {
+      "title": "Sprache Auswählen",
+      "current": "Aktuell: {{language}}"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "yes": "Ja",
+    "no": "Nein",
+    "maybeLater": "Vielleicht später",
+    "rateNow": "Jetzt bewerten",
+    "sendFeedback": "Feedback senden",
+    "clear": "Leeren",
+    "success": "Erfolg"
+  },
+  "navigation": {
+    "home": "Startseite",
+    "settings": "Einstellungen",
+    "profile": "Profil",
+    "search": "Suchen",
+    "newNote": "Neue Notiz"
+  },
+  "notes": {
+    "searchPlaceholder": "Notizen suchen...",
+    "noNotes": "Noch keine Notizen",
+    "noNotesSubtitle": "Tippen Sie auf die +-Taste, um Ihre erste Notiz zu erstellen",
+    "noMatching": "Keine passenden Notizen",
+    "noMatchingSubtitle": "Versuchen Sie, Ihre Suche anzupassen",
+    "syncing": "Synchronisiere... {{progress}}%",
+    "createFirst": "Erstellen Sie Ihre erste Notiz"
+  }
+}
