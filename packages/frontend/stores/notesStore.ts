@@ -10,6 +10,7 @@ interface NotesState {
   isOnline: boolean;
   syncStatus: SyncStatus;
   pendingSyncCount: number;
+  isInitialized?: boolean;
 
   // Actions
   setNotes: (notes: StoredNote[]) => void;
@@ -98,7 +99,12 @@ export const useNotesStore = create<NotesState>((set, get) => ({
   deleteNote: async (localId, oxyServices, activeSessionId) => {
     try {
       await syncManager.deleteNote(localId, oxyServices, activeSessionId);
-      await get().loadNotes(); // Refresh the list
+      try {
+        await get().loadNotes(); // Refresh the list
+      } catch (loadError) {
+        console.error('Error refreshing notes after delete:', loadError);
+        // Don't fail the delete operation if refresh fails
+      }
     } catch (error) {
       console.error('Error deleting note:', error);
       throw error;
@@ -109,7 +115,12 @@ export const useNotesStore = create<NotesState>((set, get) => ({
   archiveNote: async (localId, oxyServices, activeSessionId) => {
     try {
       const archivedNote = await syncManager.archiveNote(localId, oxyServices, activeSessionId);
-      await get().loadNotes(); // Refresh the list
+      try {
+        await get().loadNotes(); // Refresh the list
+      } catch (loadError) {
+        console.error('Error refreshing notes after archive:', loadError);
+        // Don't fail the archive operation if refresh fails
+      }
       return archivedNote;
     } catch (error) {
       console.error('Error archiving note:', error);
@@ -121,7 +132,12 @@ export const useNotesStore = create<NotesState>((set, get) => ({
   unarchiveNote: async (localId, oxyServices, activeSessionId) => {
     try {
       const unarchivedNote = await syncManager.unarchiveNote(localId, oxyServices, activeSessionId);
-      await get().loadNotes(); // Refresh the list
+      try {
+        await get().loadNotes(); // Refresh the list
+      } catch (loadError) {
+        console.error('Error refreshing notes after unarchive:', loadError);
+        // Don't fail the unarchive operation if refresh fails
+      }
       return unarchivedNote;
     } catch (error) {
       console.error('Error unarchiving note:', error);

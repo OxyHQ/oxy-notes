@@ -53,7 +53,8 @@ export default function NotesScreen() {
           onPress: async () => {
             try {
               await deleteNote(note.localId);
-            } catch {
+            } catch (error) {
+              console.error('Error deleting note:', error);
               Alert.alert('Error', 'Failed to delete note');
             }
           },
@@ -73,7 +74,8 @@ export default function NotesScreen() {
           onPress: async () => {
             try {
               await archiveNote(note.localId);
-            } catch {
+            } catch (error) {
+              console.error('Error archiving note:', error);
               Alert.alert('Error', 'Failed to archive note');
             }
           },
