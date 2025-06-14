@@ -60,6 +60,29 @@ export default function NotesScreen() {
     );
   };
 
+  const handleArchiveNote = async (note: StoredNote) => {
+    Alert.alert(
+      'Archive Note',
+      'Archive this note? You can access it later in the archive section.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Archive',
+          onPress: async () => {
+            try {
+              // In a real implementation, you would call something like:
+              // await archiveNote(note.localId);
+              // For now we'll just show an alert
+              Alert.alert('Info', 'Archive functionality will be implemented soon');
+            } catch {
+              Alert.alert('Error', 'Failed to archive note');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const openNote = (note: StoredNote) => {
     router.push({
       pathname: '/edit-note',
@@ -73,6 +96,8 @@ export default function NotesScreen() {
         note={note}
         onPress={() => openNote(note)}
         onLongPress={() => handleDeleteNote(note)}
+        onDelete={() => handleDeleteNote(note)}
+        onArchive={() => handleArchiveNote(note)}
         searchQuery={searchQuery}
       />
     );
@@ -302,6 +327,8 @@ export default function NotesScreen() {
                 note={note}
                 onPress={() => openNote(note)}
                 onLongPress={() => handleDeleteNote(note)}
+                onDelete={() => handleDeleteNote(note)}
+                onArchive={() => handleArchiveNote(note)}
                 searchQuery={searchQuery}
               />
             ))}

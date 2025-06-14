@@ -10,9 +10,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useOxy } from '@oxyhq/services';
 import { router } from 'expo-router';
-import { notesApi } from '../utils/api';
+import { useOfflineNotes } from '../ui/hooks/useOfflineNotes';
 
 const COLORS = [
   '#ffffff', // White (default)
@@ -30,18 +29,13 @@ const COLORS = [
 ];
 
 export default function CreateNoteScreen() {
-  const { oxyServices, activeSessionId } = useOxy();
+  const { createNote, isOnline } = useOfflineNotes();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
   const [isSaving, setIsSaving] = useState(false);
 
   const saveNote = async () => {
-    if (!activeSessionId || !oxyServices) {
-      Alert.alert('Error', 'Please sign in to save notes');
-      return;
-    }
-
     if (!title.trim() && !content.trim()) {
       Alert.alert('Error', 'Please add some content to your note');
       return;
@@ -49,13 +43,17 @@ export default function CreateNoteScreen() {
 
     setIsSaving(true);
     try {
-      await notesApi.createNote({
+      await createNote({
         title: title.trim(),
         content: content.trim(),
         color: selectedColor,
-      }, oxyServices, activeSessionId);
+      });
 
-      Alert.alert('Success', 'Note saved successfully', [
+      const successMessage = isOnline 
+        ? 'Note saved successfully' 
+        : 'Note saved offline and will sync when online';
+      
+      Alert.alert('Success', successMessage, [
         { text: 'OK', onPress: () => router.back() }
       ]);
     } catch (error) {

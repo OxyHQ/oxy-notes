@@ -73,6 +73,57 @@ export default function SearchScreen() {
     }
   }, [searchQuery, allNotes]);
 
+  const handleDeleteNote = async (note: Note) => {
+    Alert.alert(
+      'Delete Note',
+      'Are you sure you want to delete this note?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              if (oxyServices && activeSessionId) {
+                await notesApi.deleteNote(note.id, oxyServices, activeSessionId);
+                // Refresh notes after deletion
+                fetchAllNotes();
+              } else {
+                Alert.alert('Error', 'Authentication required');
+              }
+            } catch (error) {
+              console.error('Error deleting note:', error);
+              Alert.alert('Error', 'Failed to delete note');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleArchiveNote = async (note: Note) => {
+    Alert.alert(
+      'Archive Note',
+      'Archive this note? You can access it later in the archive section.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Archive',
+          onPress: async () => {
+            try {
+              // In a real implementation, you would call something like:
+              // await archiveNote(note.id);
+              Alert.alert('Info', 'Archive functionality will be implemented soon');
+            } catch (error) {
+              console.error('Error archiving note:', error);
+              Alert.alert('Error', 'Failed to archive note');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const openNote = (note: Note) => {
     console.log('Opening note:', note);
     
@@ -138,6 +189,8 @@ export default function SearchScreen() {
         containerStyle={{ width: itemWidth }}
         limitContentLines={4}
         searchQuery={searchQuery}
+        onDelete={() => handleDeleteNote(note)}
+        onArchive={() => handleArchiveNote(note)}
       />
     );
   };

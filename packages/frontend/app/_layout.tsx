@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Platform, useWindowDimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Platform, Dimensions } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -11,9 +11,33 @@ import BottomNavigation from '../ui/components/navigation/BottomNavigation';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+// Define breakpoints as constants to avoid unnecessary re-renders
+const TABLET_BREAKPOINT = 768;
+
 export default function RootLayout() {
-  const { width } = useWindowDimensions();
-  const isLargeScreen = width >= 768; // Tablet/desktop breakpoint
+  // Get initial dimensions only once
+  const [isLargeScreen, setIsLargeScreen] = useState(() => {
+    const { width } = Dimensions.get('window');
+    return width >= TABLET_BREAKPOINT;
+  });
+  
+  // Only for web: add resize listener for responsive layout
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const handleResize = () => {
+        const { width } = Dimensions.get('window');
+        setIsLargeScreen(width >= TABLET_BREAKPOINT);
+      };
+      
+      // Add event listener
+      window.addEventListener('resize', handleResize);
+      
+      // Clean up
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, []);
   
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -104,7 +128,6 @@ const styles = StyleSheet.create({
   },
   webContent: {
     flex: 1,
-    maxWidth: 1200,
     width: '100%',
   },
 });

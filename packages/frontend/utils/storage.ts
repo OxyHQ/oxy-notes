@@ -114,6 +114,16 @@ class StorageManager {
     }
   }
 
+  async getPendingSyncsCount(): Promise<number> {
+    try {
+      const syncs = await this.getPendingSyncs();
+      return syncs.length;
+    } catch (error) {
+      console.error('Error getting pending syncs count:', error);
+      return 0;
+    }
+  }
+
   // Last Sync Management
   async getLastSyncTime(): Promise<number> {
     try {
