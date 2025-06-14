@@ -13,6 +13,7 @@ import { useOxy } from '@oxyhq/services';
 import { OxySignInButton } from '@oxyhq/services/full';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useOfflineNotes } from '../ui/hooks/useOfflineNotes';
 import { StoredNote } from '../utils/storage';
 import MasonryGrid from '../ui/components/MasonryGrid';
@@ -20,6 +21,7 @@ import NoteCard from '../ui/components/NoteCard';
 
 export default function NotesScreen() {
   const { user } = useOxy();
+  const { t } = useTranslation();
   const {
     notes,
     isLoading,
@@ -199,7 +201,7 @@ export default function NotesScreen() {
           })()}
           <TextInput
             style={styles.searchInput}
-            placeholder="Search notes..."
+            placeholder={t('notes.searchPlaceholder')}
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor="#666"
@@ -237,7 +239,7 @@ export default function NotesScreen() {
               );
             })()}
             <Text style={styles.syncStatusText}>
-              Syncing... {syncStatus.progress || 0}%
+              {t('notes.syncing', { progress: syncStatus.progress || 0 })}
             </Text>
           </View>
         </View>
@@ -260,12 +262,12 @@ export default function NotesScreen() {
                 );
               })()}
               <Text style={styles.emptyTitle}>
-                {searchQuery ? 'No matching notes' : 'No notes yet'}
+                {searchQuery ? t('notes.noMatching') : t('notes.noNotes')}
               </Text>
               <Text style={styles.emptySubtitle}>
                 {searchQuery
-                  ? 'Try adjusting your search'
-                  : 'Tap the + button to create your first note'}
+                  ? t('notes.noMatchingSubtitle')
+                  : t('notes.noNotesSubtitle')}
               </Text>
             </View>
           ) : (
@@ -300,12 +302,12 @@ export default function NotesScreen() {
               );
             })()}
             <Text style={styles.emptyTitle}>
-              {searchQuery ? 'No matching notes' : 'No notes yet'}
+              {searchQuery ? t('notes.noMatching') : t('notes.noNotes')}
             </Text>
             <Text style={styles.emptySubtitle}>
               {searchQuery 
-                ? 'Try a different search term' 
-                : 'Tap the + button to create your first note'
+                ? t('notes.noMatchingSubtitle')
+                : t('notes.noNotesSubtitle')
               }
             </Text>
             {!searchQuery && (
@@ -313,7 +315,7 @@ export default function NotesScreen() {
                 style={styles.createButton}
                 onPress={() => router.push('/create-note')}
               >
-                <Text style={styles.createButtonText}>Create Note</Text>
+                <Text style={styles.createButtonText}>{t('notes.createFirst')}</Text>
               </TouchableOpacity>
             )}
           </View>

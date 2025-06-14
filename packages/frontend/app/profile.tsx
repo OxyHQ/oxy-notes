@@ -10,21 +10,23 @@ import {
 import { useOxy } from '@oxyhq/services';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export default function SettingsScreen() {
   const { user } = useOxy();
+  const { t } = useTranslation();
 
   const handleSignOut = () => {
     Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
+      t('profile.signOut'),
+      t('profile.signOutConfirm'),
       [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Sign Out',
+          text: t('profile.signOut'),
           style: 'destructive',
           onPress: () => {
             // For now, just navigate back - the actual sign out would depend on Oxy services
@@ -50,9 +52,9 @@ export default function SettingsScreen() {
               />
             );
           })()}
-          <Text style={styles.authPromptTitle}>Settings</Text>
+          <Text style={styles.authPromptTitle}>{t('profile.title')}</Text>
           <Text style={styles.authPromptText}>
-            Please sign in to view your settings
+            {t('profile.signInPrompt')}
           </Text>
         </View>
       </View>
@@ -63,7 +65,7 @@ export default function SettingsScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={styles.headerTitle}>{t('profile.title')}</Text>
       </View>
 
       <ScrollView style={styles.content}>
@@ -91,7 +93,7 @@ export default function SettingsScreen() {
 
         {/* App Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About Noted</Text>
+          <Text style={styles.sectionTitle}>{t('profile.aboutNoted')}</Text>
           <View style={styles.infoCard}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
               {(() => {
@@ -108,22 +110,21 @@ export default function SettingsScreen() {
               <Text style={styles.appName}>Noted</Text>
             </View>
             <Text style={styles.appDescription}>
-              A simple and elegant note-taking app powered by Oxy services.
-              Create, edit, and organize your thoughts seamlessly.
+              {t('profile.appDescription')}
             </Text>
           </View>
         </View>
 
         {/* Actions */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Actions</Text>
+          <Text style={styles.sectionTitle}>{t('profile.actions')}</Text>
           
           <TouchableOpacity 
             style={styles.actionButton}
             onPress={() => router.push('/create-note')}
           >
             <Text style={styles.actionIcon}>➕</Text>
-            <Text style={styles.actionText}>Create New Note</Text>
+            <Text style={styles.actionText}>{t('profile.createNote')}</Text>
             <Text style={styles.actionArrow}>›</Text>
           </TouchableOpacity>
 
@@ -132,7 +133,7 @@ export default function SettingsScreen() {
             onPress={() => router.push('/search')}
           >
             <Text style={styles.actionIcon}>🔍</Text>
-            <Text style={styles.actionText}>Search Notes</Text>
+            <Text style={styles.actionText}>{t('profile.searchNotes')}</Text>
             <Text style={styles.actionArrow}>›</Text>
           </TouchableOpacity>
         </View>
@@ -143,7 +144,7 @@ export default function SettingsScreen() {
             style={styles.signOutButton}
             onPress={handleSignOut}
           >
-            <Text style={styles.signOutText}>Sign Out</Text>
+            <Text style={styles.signOutText}>{t('profile.signOut')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

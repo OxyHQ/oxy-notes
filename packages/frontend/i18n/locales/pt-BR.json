@@ -1,0 +1,115 @@
+{
+  "settings": {
+    "title": "Configurações",
+    "signInPrompt": "Por favor, faça login para ver suas configurações",
+    "sections": {
+      "account": "Conta",
+      "aboutNoted": "Sobre o Noted",
+      "supportFeedback": "Suporte e Feedback",
+      "preferences": "Preferências",
+      "quickActions": "Ações Rápidas",
+      "data": "Dados",
+      "language": "Idioma"
+    },
+    "account": {
+      "manageAccount": "Recursos de gerenciamento de conta em breve!"
+    },
+    "aboutNoted": {
+      "appName": "Noted",
+      "version": "Versão {{version}}",
+      "build": "Build",
+      "buildVersion": "Desenvolvimento",
+      "platform": "Plataforma",
+      "expoSDK": "Expo SDK",
+      "notesCount": "Suas Notas",
+      "notesCountDesc": "{{count}} notas criadas"
+    },
+    "supportFeedback": {
+      "helpSupport": "Ajuda e Suporte",
+      "helpSupportDesc": "Obter ajuda e documentação",
+      "helpSupportMessage": "Para ajuda e suporte, entre em contato conosco em support@noted.app ou visite nossa documentação.",
+      "sendFeedback": "Enviar Feedback",
+      "sendFeedbackDesc": "Compartilhe seus pensamentos e sugestões",
+      "sendFeedbackMessage": "Adoraríamos ouvir de você! Seu feedback nos ajuda a melhorar o Noted.",
+      "sendFeedbackThankYou": "Obrigado! Seu feedback é valioso para nós.",
+      "rateApp": "Avaliar Noted",
+      "rateAppDesc": "Nos avalie na App Store",
+      "rateAppMessage": "Gostando do Noted? Por favor, nos avalie na App Store!",
+      "rateAppThankYou": "Obrigado! Redirecionando para a App Store..."
+    },
+    "preferences": {
+      "notifications": "Notificações Push",
+      "notificationsDesc": "Receber alertas para lembretes de notas",
+      "darkMode": "Modo Escuro",
+      "darkModeDesc": "Usar tema escuro",
+      "autoSync": "Sincronização Automática",
+      "autoSyncDesc": "Sincronizar notas automaticamente entre dispositivos",
+      "offlineMode": "Modo Offline",
+      "offlineModeDesc": "Trabalhar sem conexão com a internet",
+      "language": "Idioma",
+      "languageDesc": "Alterar idioma do aplicativo"
+    },
+    "quickActions": {
+      "createNote": "Criar Nova Nota",
+      "createNoteDesc": "Começar a escrever uma nova nota",
+      "searchNotes": "Buscar Notas",
+      "searchNotesDesc": "Encontrar notas por título ou conteúdo"
+    },
+    "data": {
+      "exportNotes": "Exportar Notas",
+      "exportNotesDesc": "Baixar suas notas como backup",
+      "clearCache": "Limpar Cache",
+      "clearCacheDesc": "Remover dados em cache do dispositivo",
+      "clearCacheMessage": "Isso removerá todos os dados em cache do seu dispositivo. Tem certeza?",
+      "clearCacheSuccess": "Cache limpo com sucesso",
+      "noNotesToExport": "Nenhuma Nota para Exportar",
+      "noNotesToExportMessage": "Você ainda não tem notas para exportar. Crie algumas notas primeiro."
+    },
+    "signOut": "Sair",
+    "signOutDesc": "Sair da sua conta",
+    "signOutMessage": "Tem certeza de que deseja sair?",
+    "languageSelection": {
+      "title": "Selecionar Idioma",
+      "current": "Atual: {{language}}"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "yes": "Sim",
+    "no": "Não",
+    "maybeLater": "Talvez mais tarde",
+    "rateNow": "Avaliar agora",
+    "sendFeedback": "Enviar feedback",
+    "clear": "Limpar",
+    "success": "Sucesso"
+  },
+  "navigation": {
+    "home": "Início",
+    "settings": "Configurações",
+    "profile": "Perfil",
+    "search": "Buscar",
+    "newNote": "Nova Nota"
+  },
+  "notes": {
+    "searchPlaceholder": "Buscar notas...",
+    "noNotes": "Ainda não há notas",
+    "noNotesSubtitle": "Toque no botão + para criar sua primeira nota",
+    "noMatching": "Nenhuma nota correspondente",
+    "noMatchingSubtitle": "Tente ajustar sua busca",
+    "syncing": "Sincronizando... {{progress}}%",
+    "createFirst": "Crie sua primeira nota"
+  },
+  "profile": {
+    "title": "Perfil",
+    "signInPrompt": "Por favor, faça login para ver seu perfil",
+    "aboutNoted": "Sobre o Noted",
+    "appDescription": "Um aplicativo simples e elegante para anotações alimentado pelos serviços Oxy. Crie, edite e organize seus pensamentos perfeitamente.",
+    "actions": "Ações",
+    "createNote": "Criar Nova Nota",
+    "searchNotes": "Buscar Notas",
+    "signOut": "Sair",
+    "signOutConfirm": "Tem certeza de que deseja sair?"
+  }
+}

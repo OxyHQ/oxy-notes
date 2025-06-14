@@ -12,12 +12,16 @@ import { useOxy } from '@oxyhq/services';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
+import { useTranslation } from 'react-i18next';
 import { useNotesStore } from '../stores/notesStore';
 import ExportNotesModal from '../ui/components/ExportNotesModal';
+import LanguageSelectionModal from '../ui/components/LanguageSelectionModal';
+import { availableLanguages } from '../i18n';
 
 export default function SettingsScreen() {
   const { user } = useOxy();
   const { notes, loadNotes } = useNotesStore();
+  const { t, i18n } = useTranslation();
   
   // Settings state
   const [notifications, setNotifications] = useState(true);
@@ -25,6 +29,7 @@ export default function SettingsScreen() {
   const [autoSync, setAutoSync] = useState(true);
   const [offlineMode, setOfflineMode] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
 
   // Load notes when component mounts
   useEffect(() => {
@@ -34,15 +39,15 @@ export default function SettingsScreen() {
 
   const handleSignOut = () => {
     Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
+      t('settings.signOut'),
+      t('settings.signOutMessage'),
       [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Sign Out',
+          text: t('settings.signOut'),
           style: 'destructive',
           onPress: () => {
             // For now, just navigate back - the actual sign out would depend on Oxy services
@@ -55,19 +60,19 @@ export default function SettingsScreen() {
 
   const handleClearCache = () => {
     Alert.alert(
-      'Clear Cache',
-      'This will remove all cached data from your device. Are you sure?',
+      t('settings.data.clearCache'),
+      t('settings.data.clearCacheMessage'),
       [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Clear',
+          text: t('common.clear'),
           style: 'destructive',
           onPress: () => {
             // Implementation would clear app cache
-            Alert.alert('Success', 'Cache cleared successfully');
+            Alert.alert(t('common.success'), t('settings.data.clearCacheSuccess'));
           },
         },
       ]
@@ -81,15 +86,20 @@ export default function SettingsScreen() {
     
     if (notes.length === 0) {
       Alert.alert(
-        'No Notes to Export',
-        'You don\'t have any notes to export yet. Create some notes first.',
-        [{ text: 'OK' }]
+        t('settings.data.noNotesToExport'),
+        t('settings.data.noNotesToExportMessage'),
+        [{ text: t('common.ok') }]
       );
       return;
     }
 
     console.log('Setting showExportModal to true');
     setShowExportModal(true);
+  };
+
+  const getCurrentLanguageName = () => {
+    const current = availableLanguages.find(lang => lang.code === i18n.language);
+    return current ? current.name : t('common.defaultLanguageName');
   };
 
   if (!user) {
@@ -107,9 +117,9 @@ export default function SettingsScreen() {
               />
             );
           })()}
-          <Text style={styles.authPromptTitle}>Settings</Text>
+          <Text style={styles.authPromptTitle}>{t('settings.title')}</Text>
           <Text style={styles.authPromptText}>
-            Please sign in to view your settings
+            {t('settings.signInPrompt')}
           </Text>
         </View>
       </View>
@@ -120,19 +130,19 @@ export default function SettingsScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={styles.headerTitle}>{t('settings.title')}</Text>
       </View>
 
       <ScrollView style={styles.content}>
         {/* User Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
+          <Text style={styles.sectionTitle}>{t('settings.sections.account')}</Text>
           
           <TouchableOpacity 
             style={[styles.settingItem, styles.firstSettingItem, styles.lastSettingItem]}
             onPress={() => {
               // Future: Navigate to account management screen
-              Alert.alert('Account', 'Account management features coming soon!');
+              Alert.alert(t('settings.sections.account'), t('settings.account.manageAccount'));
             }}
           >
             <View style={styles.userIcon}>
@@ -152,15 +162,17 @@ export default function SettingsScreen() {
 
         {/* About Noted */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About Noted</Text>
+          <Text style={styles.sectionTitle}>{t('settings.sections.aboutNoted')}</Text>
           
           {/* App Title and Version */}
           <View style={[styles.settingItem, styles.firstSettingItem]}>
             <View style={styles.settingInfo}>
               <Ionicons name="document-text" size={20} color="#ffc107" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Noted</Text>
-                <Text style={styles.settingDescription}>Version {Constants.expoConfig?.version || '1.0.0'}</Text>
+                <Text style={styles.settingLabel}>{t('settings.aboutNoted.appName')}</Text>
+                <Text style={styles.settingDescription}>
+                  {t('settings.aboutNoted.version', { version: Constants.expoConfig?.version || '1.0.0' })}
+                </Text>
               </View>
             </View>
           </View>
@@ -170,11 +182,11 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="hammer" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Build</Text>
+                <Text style={styles.settingLabel}>{t('settings.aboutNoted.build')}</Text>
                 <Text style={styles.settingDescription}>
                   {typeof Constants.expoConfig?.runtimeVersion === 'string' 
                     ? Constants.expoConfig.runtimeVersion 
-                    : 'Development'}
+                    : t('settings.aboutNoted.buildVersion')}
                 </Text>
               </View>
             </View>
@@ -185,7 +197,7 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="phone-portrait" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Platform</Text>
+                <Text style={styles.settingLabel}>{t('settings.aboutNoted.platform')}</Text>
                 <Text style={styles.settingDescription}>
                   {Constants.platform?.ios ? 'iOS' : Constants.platform?.android ? 'Android' : 'Web'}
                 </Text>
@@ -198,7 +210,7 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="code-slash" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Expo SDK</Text>
+                <Text style={styles.settingLabel}>{t('settings.aboutNoted.expoSDK')}</Text>
                 <Text style={styles.settingDescription}>{Constants.expoVersion || 'Unknown'}</Text>
               </View>
             </View>
@@ -209,8 +221,10 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="documents" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Your Notes</Text>
-                <Text style={styles.settingDescription}>{notes.length} notes created</Text>
+                <Text style={styles.settingLabel}>{t('settings.aboutNoted.notesCount')}</Text>
+                <Text style={styles.settingDescription}>
+                  {t('settings.aboutNoted.notesCountDesc', { count: notes.length })}
+                </Text>
               </View>
             </View>
           </View>
@@ -218,23 +232,23 @@ export default function SettingsScreen() {
 
         {/* Support & Feedback */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Support & Feedback</Text>
+          <Text style={styles.sectionTitle}>{t('settings.sections.supportFeedback')}</Text>
           
           <TouchableOpacity 
             style={[styles.settingItem, styles.firstSettingItem]}
             onPress={() => {
               Alert.alert(
-                'Help & Support',
-                'For help and support, please contact us at support@noted.app or visit our documentation.',
-                [{ text: 'OK' }]
+                t('settings.supportFeedback.helpSupport'),
+                t('settings.supportFeedback.helpSupportMessage'),
+                [{ text: t('common.ok') }]
               );
             }}
           >
             <View style={styles.settingInfo}>
               <Ionicons name="help-circle" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Help & Support</Text>
-                <Text style={styles.settingDescription}>Get help and documentation</Text>
+                <Text style={styles.settingLabel}>{t('settings.supportFeedback.helpSupport')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.supportFeedback.helpSupportDesc')}</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
@@ -244,15 +258,15 @@ export default function SettingsScreen() {
             style={styles.settingItem}
             onPress={() => {
               Alert.alert(
-                'Send Feedback',
-                'We\'d love to hear from you! Your feedback helps us improve Noted.',
+                t('settings.supportFeedback.sendFeedback'),
+                t('settings.supportFeedback.sendFeedbackMessage'),
                 [
-                  { text: 'Cancel', style: 'cancel' },
+                  { text: t('common.cancel'), style: 'cancel' },
                   { 
-                    text: 'Send Feedback', 
+                    text: t('common.sendFeedback'), 
                     onPress: () => {
                       // Here you could implement actual feedback functionality
-                      Alert.alert('Thank you!', 'Your feedback is valuable to us.');
+                      Alert.alert(t('common.success'), t('settings.supportFeedback.sendFeedbackThankYou'));
                     }
                   }
                 ]
@@ -262,8 +276,8 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="chatbubble" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Send Feedback</Text>
-                <Text style={styles.settingDescription}>Share your thoughts and suggestions</Text>
+                <Text style={styles.settingLabel}>{t('settings.supportFeedback.sendFeedback')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.supportFeedback.sendFeedbackDesc')}</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
@@ -273,15 +287,15 @@ export default function SettingsScreen() {
             style={[styles.settingItem, styles.lastSettingItem]}
             onPress={() => {
               Alert.alert(
-                'Rate Noted',
-                'Enjoying Noted? Please rate us on the App Store!',
+                t('settings.supportFeedback.rateApp'),
+                t('settings.supportFeedback.rateAppMessage'),
                 [
-                  { text: 'Maybe Later', style: 'cancel' },
+                  { text: t('common.maybeLater'), style: 'cancel' },
                   { 
-                    text: 'Rate Now', 
+                    text: t('common.rateNow'), 
                     onPress: () => {
                       // Here you could implement app store rating
-                      Alert.alert('Thank you!', 'Redirecting to App Store...');
+                      Alert.alert(t('common.success'), t('settings.supportFeedback.rateAppThankYou'));
                     }
                   }
                 ]
@@ -291,8 +305,8 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="star" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Rate Noted</Text>
-                <Text style={styles.settingDescription}>Rate us on the App Store</Text>
+                <Text style={styles.settingLabel}>{t('settings.supportFeedback.rateApp')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.supportFeedback.rateAppDesc')}</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
@@ -301,14 +315,14 @@ export default function SettingsScreen() {
 
         {/* App Preferences */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
+          <Text style={styles.sectionTitle}>{t('settings.sections.preferences')}</Text>
           
           <View style={[styles.settingItem, styles.firstSettingItem]}>
             <View style={styles.settingInfo}>
               <Ionicons name="notifications" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Push Notifications</Text>
-                <Text style={styles.settingDescription}>Receive alerts for note reminders</Text>
+                <Text style={styles.settingLabel}>{t('settings.preferences.notifications')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.preferences.notificationsDesc')}</Text>
               </View>
             </View>
             <Switch
@@ -324,8 +338,8 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="moon" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Dark Mode</Text>
-                <Text style={styles.settingDescription}>Use dark theme</Text>
+                <Text style={styles.settingLabel}>{t('settings.preferences.darkMode')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.preferences.darkModeDesc')}</Text>
               </View>
             </View>
             <Switch
@@ -341,8 +355,8 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="sync" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Auto Sync</Text>
-                <Text style={styles.settingDescription}>Automatically sync notes across devices</Text>
+                <Text style={styles.settingLabel}>{t('settings.preferences.autoSync')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.preferences.autoSyncDesc')}</Text>
               </View>
             </View>
             <Switch
@@ -354,12 +368,12 @@ export default function SettingsScreen() {
             />
           </View>
 
-          <View style={[styles.settingItem, styles.lastSettingItem]}>
+          <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
               <Ionicons name="cloud-offline" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Offline Mode</Text>
-                <Text style={styles.settingDescription}>Work without internet connection</Text>
+                <Text style={styles.settingLabel}>{t('settings.preferences.offlineMode')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.preferences.offlineModeDesc')}</Text>
               </View>
             </View>
             <Switch
@@ -370,11 +384,28 @@ export default function SettingsScreen() {
               ios_backgroundColor="#f0f0f0"
             />
           </View>
+
+          {/* Language Selection */}
+          <TouchableOpacity 
+            style={[styles.settingItem, styles.lastSettingItem]}
+            onPress={() => setShowLanguageModal(true)}
+          >
+            <View style={styles.settingInfo}>
+              <Ionicons name="language" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>{t('settings.preferences.language')}</Text>
+                <Text style={styles.settingDescription}>
+                  {getCurrentLanguageName()} • {t('settings.preferences.languageDesc')}
+                </Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color="#ccc" />
+          </TouchableOpacity>
         </View>
 
         {/* Quick Actions */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={styles.sectionTitle}>{t('settings.sections.quickActions')}</Text>
           
           <TouchableOpacity 
             style={[styles.settingItem, styles.firstSettingItem]}
@@ -383,8 +414,8 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="add" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Create New Note</Text>
-                <Text style={styles.settingDescription}>Start writing a new note</Text>
+                <Text style={styles.settingLabel}>{t('settings.quickActions.createNote')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.quickActions.createNoteDesc')}</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
@@ -397,8 +428,8 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="search" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Search Notes</Text>
-                <Text style={styles.settingDescription}>Find notes by title or content</Text>
+                <Text style={styles.settingLabel}>{t('settings.quickActions.searchNotes')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.quickActions.searchNotesDesc')}</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
@@ -407,7 +438,7 @@ export default function SettingsScreen() {
 
         {/* Data Management */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data</Text>
+          <Text style={styles.sectionTitle}>{t('settings.sections.data')}</Text>
           
           <TouchableOpacity 
             style={[styles.settingItem, styles.firstSettingItem]}
@@ -416,8 +447,8 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="download" size={20} color="#666" style={styles.settingIcon} />
               <View>
-                <Text style={styles.settingLabel}>Export Notes</Text>
-                <Text style={styles.settingDescription}>Download your notes as backup</Text>
+                <Text style={styles.settingLabel}>{t('settings.data.exportNotes')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.data.exportNotesDesc')}</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
@@ -430,8 +461,8 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="trash" size={20} color="#ff4757" style={styles.settingIcon} />
               <View>
-                <Text style={[styles.settingLabel, { color: '#ff4757' }]}>Clear Cache</Text>
-                <Text style={styles.settingDescription}>Remove cached data from device</Text>
+                <Text style={[styles.settingLabel, { color: '#ff4757' }]}>{t('settings.data.clearCache')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.data.clearCacheDesc')}</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
@@ -447,8 +478,8 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <Ionicons name="log-out" size={20} color="#ff4757" style={styles.settingIcon} />
               <View>
-                <Text style={[styles.settingLabel, { color: '#ff4757' }]}>Sign Out</Text>
-                <Text style={styles.settingDescription}>Sign out of your account</Text>
+                <Text style={[styles.settingLabel, { color: '#ff4757' }]}>{t('settings.signOut')}</Text>
+                <Text style={styles.settingDescription}>{t('settings.signOutDesc')}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -460,6 +491,12 @@ export default function SettingsScreen() {
         visible={showExportModal}
         onClose={() => setShowExportModal(false)}
         notes={notes}
+      />
+
+      {/* Language Selection Modal */}
+      <LanguageSelectionModal
+        visible={showLanguageModal}
+        onClose={() => setShowLanguageModal(false)}
       />
     </View>
   );

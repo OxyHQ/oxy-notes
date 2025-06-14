@@ -1,0 +1,115 @@
+{
+  "settings": {
+    "title": "Configuración",
+    "signInPrompt": "Por favor inicia sesión para ver tu configuración",
+    "sections": {
+      "account": "Cuenta",
+      "aboutNoted": "Acerca de Noted",
+      "supportFeedback": "Soporte y Comentarios",
+      "preferences": "Preferencias",
+      "quickActions": "Acciones Rápidas",
+      "data": "Datos",
+      "language": "Idioma"
+    },
+    "account": {
+      "manageAccount": "¡Las funciones de gestión de cuenta estarán disponibles próximamente!"
+    },
+    "aboutNoted": {
+      "appName": "Noted",
+      "version": "Versión {{version}}",
+      "build": "Compilación",
+      "buildVersion": "Desarrollo",
+      "platform": "Plataforma",
+      "expoSDK": "Expo SDK",
+      "notesCount": "Tus Notas",
+      "notesCountDesc": "{{count}} notas creadas"
+    },
+    "supportFeedback": {
+      "helpSupport": "Ayuda y Soporte",
+      "helpSupportDesc": "Obtener ayuda y documentación",
+      "helpSupportMessage": "Para ayuda y soporte, por favor contáctanos en support@noted.app o visita nuestra documentación.",
+      "sendFeedback": "Enviar Comentarios",
+      "sendFeedbackDesc": "Comparte tus pensamientos y sugerencias",
+      "sendFeedbackMessage": "¡Nos encantaría saber de ti! Tus comentarios nos ayudan a mejorar Noted.",
+      "sendFeedbackThankYou": "¡Gracias! Tus comentarios son valiosos para nosotros.",
+      "rateApp": "Calificar Noted",
+      "rateAppDesc": "Califícanos en la App Store",
+      "rateAppMessage": "¿Disfrutas usando Noted? ¡Por favor califícanos en la App Store!",
+      "rateAppThankYou": "¡Gracias! Redirigiendo a la App Store..."
+    },
+    "preferences": {
+      "notifications": "Notificaciones Push",
+      "notificationsDesc": "Recibir alertas para recordatorios de notas",
+      "darkMode": "Modo Oscuro",
+      "darkModeDesc": "Usar tema oscuro",
+      "autoSync": "Sincronización Automática",
+      "autoSyncDesc": "Sincronizar notas automáticamente entre dispositivos",
+      "offlineMode": "Modo Sin Conexión",
+      "offlineModeDesc": "Trabajar sin conexión a internet",
+      "language": "Idioma",
+      "languageDesc": "Cambiar idioma de la aplicación"
+    },
+    "quickActions": {
+      "createNote": "Crear Nueva Nota",
+      "createNoteDesc": "Comenzar a escribir una nueva nota",
+      "searchNotes": "Buscar Notas",
+      "searchNotesDesc": "Encontrar notas por título o contenido"
+    },
+    "data": {
+      "exportNotes": "Exportar Notas",
+      "exportNotesDesc": "Descargar tus notas como respaldo",
+      "clearCache": "Limpiar Caché",
+      "clearCacheDesc": "Eliminar datos en caché del dispositivo",
+      "clearCacheMessage": "Esto eliminará todos los datos en caché de tu dispositivo. ¿Estás seguro?",
+      "clearCacheSuccess": "Caché limpiado exitosamente",
+      "noNotesToExport": "No Hay Notas para Exportar",
+      "noNotesToExportMessage": "Aún no tienes notas para exportar. Primero crea algunas notas."
+    },
+    "signOut": "Cerrar Sesión",
+    "signOutDesc": "Cerrar sesión de tu cuenta",
+    "signOutMessage": "¿Estás seguro de que quieres cerrar sesión?",
+    "languageSelection": {
+      "title": "Seleccionar Idioma",
+      "current": "Actual: {{language}}"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "yes": "Sí",
+    "no": "No",
+    "maybeLater": "Tal vez más tarde",
+    "rateNow": "Calificar ahora",
+    "sendFeedback": "Enviar comentarios",
+    "clear": "Limpiar",
+    "success": "Éxito"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "search": "Buscar",
+    "newNote": "Nueva Nota"
+  },
+  "notes": {
+    "searchPlaceholder": "Buscar notas...",
+    "noNotes": "Aún no hay notas",
+    "noNotesSubtitle": "Toca el botón + para crear tu primera nota",
+    "noMatching": "No hay notas coincidentes",
+    "noMatchingSubtitle": "Intenta ajustar tu búsqueda",
+    "syncing": "Sincronizando... {{progress}}%",
+    "createFirst": "Crea tu primera nota"
+  },
+  "profile": {
+    "title": "Perfil",
+    "signInPrompt": "Por favor inicia sesión para ver tu perfil",
+    "aboutNoted": "Acerca de Noted",
+    "appDescription": "Una aplicación simple y elegante para tomar notas impulsada por servicios Oxy. Crea, edita y organiza tus pensamientos sin problemas.",
+    "actions": "Acciones",
+    "createNote": "Crear Nueva Nota",
+    "searchNotes": "Buscar Notas",
+    "signOut": "Cerrar Sesión",
+    "signOutConfirm": "¿Estás seguro de que quieres cerrar sesión?"
+  }
+}

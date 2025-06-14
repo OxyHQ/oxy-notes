@@ -1,0 +1,115 @@
+{
+  "settings": {
+    "title": "Settings",
+    "signInPrompt": "Please sign in to view your settings",
+    "sections": {
+      "account": "Account",
+      "aboutNoted": "About Noted",
+      "supportFeedback": "Support & Feedback",
+      "preferences": "Preferences",
+      "quickActions": "Quick Actions",
+      "data": "Data",
+      "language": "Language"
+    },
+    "account": {
+      "manageAccount": "Account management features coming soon!"
+    },
+    "aboutNoted": {
+      "appName": "Noted",
+      "version": "Version {{version}}",
+      "build": "Build",
+      "buildVersion": "Development",
+      "platform": "Platform",
+      "expoSDK": "Expo SDK",
+      "notesCount": "Your Notes",
+      "notesCountDesc": "{{count}} notes created"
+    },
+    "supportFeedback": {
+      "helpSupport": "Help & Support",
+      "helpSupportDesc": "Get help and documentation",
+      "helpSupportMessage": "For help and support, please contact us at support@noted.app or visit our documentation.",
+      "sendFeedback": "Send Feedback",
+      "sendFeedbackDesc": "Share your thoughts and suggestions",
+      "sendFeedbackMessage": "We'd love to hear from you! Your feedback helps us improve Noted.",
+      "sendFeedbackThankYou": "Thank you! Your feedback is valuable to us.",
+      "rateApp": "Rate Noted",
+      "rateAppDesc": "Rate us on the App Store",
+      "rateAppMessage": "Enjoying Noted? Please rate us on the App Store!",
+      "rateAppThankYou": "Thank you! Redirecting to App Store..."
+    },
+    "preferences": {
+      "notifications": "Push Notifications",
+      "notificationsDesc": "Receive alerts for note reminders",
+      "darkMode": "Dark Mode",
+      "darkModeDesc": "Use dark theme",
+      "autoSync": "Auto Sync",
+      "autoSyncDesc": "Automatically sync notes across devices",
+      "offlineMode": "Offline Mode",
+      "offlineModeDesc": "Work without internet connection",
+      "language": "Language",
+      "languageDesc": "Change app language"
+    },
+    "quickActions": {
+      "createNote": "Create New Note",
+      "createNoteDesc": "Start writing a new note",
+      "searchNotes": "Search Notes",
+      "searchNotesDesc": "Find notes by title or content"
+    },
+    "data": {
+      "exportNotes": "Export Notes",
+      "exportNotesDesc": "Download your notes as backup",
+      "clearCache": "Clear Cache",
+      "clearCacheDesc": "Remove cached data from device",
+      "clearCacheMessage": "This will remove all cached data from your device. Are you sure?",
+      "clearCacheSuccess": "Cache cleared successfully",
+      "noNotesToExport": "No Notes to Export",
+      "noNotesToExportMessage": "You don't have any notes to export yet. Create some notes first."
+    },
+    "signOut": "Sign Out",
+    "signOutDesc": "Sign out of your account",
+    "signOutMessage": "Are you sure you want to sign out?",
+    "languageSelection": {
+      "title": "Select Language",
+      "current": "Current: {{language}}"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "yes": "Yes",
+    "no": "No",
+    "maybeLater": "Maybe Later",
+    "rateNow": "Rate Now",
+    "sendFeedback": "Send Feedback",
+    "clear": "Clear",
+    "success": "Success"
+  },
+  "navigation": {
+    "home": "Home",
+    "settings": "Settings",
+    "profile": "Profile",
+    "search": "Search",
+    "newNote": "New Note"
+  },
+  "notes": {
+    "searchPlaceholder": "Search notes...",
+    "noNotes": "No notes yet",
+    "noNotesSubtitle": "Tap the + button to create your first note",
+    "noMatching": "No matching notes",
+    "noMatchingSubtitle": "Try adjusting your search",
+    "syncing": "Syncing... {{progress}}%",
+    "createFirst": "Create your first note"
+  },
+  "profile": {
+    "title": "Profile",
+    "signInPrompt": "Please sign in to view your profile",
+    "aboutNoted": "About Noted",
+    "appDescription": "A simple and elegant note-taking app powered by Oxy services. Create, edit, and organize your thoughts seamlessly.",
+    "actions": "Actions",
+    "createNote": "Create New Note",
+    "searchNotes": "Search Notes",
+    "signOut": "Sign Out",
+    "signOutConfirm": "Are you sure you want to sign out?"
+  }
+}

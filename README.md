@@ -70,6 +70,19 @@ This monorepo uses npm workspaces to manage dependencies and scripts across pack
 - Shared dependencies can be installed at the root level
 - Each package maintains its own `package.json` for specific dependencies
 
+## Features
+
+### Internationalization (i18n)
+
+The Oxy Notes app supports multiple languages with user-selectable language preferences:
+
+- **Supported Languages**: English (US), Spanish, French, German, Portuguese (Brazil), Chinese (Simplified)
+- **Language Selection**: Available in Settings → Preferences → Language
+- **Persistent Settings**: Language choice is automatically saved and restored
+- **Easy Expansion**: New languages can be easily added following the established structure
+
+For detailed information on using and contributing to translations, see [docs/i18n.md](docs/i18n.md).
+
 ## Contributing
 
 Please read the individual package READMEs for specific contribution guidelines.
