@@ -407,11 +407,11 @@ class SyncManager {
             }
             break;
           case 'archive':
-            const archiveNote = await storageManager.getNoteById(sync.id);
-            if (archiveNote && archiveNote.id && !archiveNote.id.startsWith('local_')) {
-              await notesApi.archiveNote(archiveNote.id, oxyServices, activeSessionId);
-              archiveNote.syncStatus = 'synced';
-              await storageManager.saveNote(archiveNote);
+            const archivedNote = await storageManager.getNoteById(sync.id);
+            if (archivedNote && archivedNote.id && !archivedNote.id.startsWith('local_')) {
+              await notesApi.archiveNote(archivedNote.id, oxyServices, activeSessionId);
+              archivedNote.syncStatus = 'synced';
+              await storageManager.saveNote(archivedNote);
             }
             break;
           case 'unarchive':
