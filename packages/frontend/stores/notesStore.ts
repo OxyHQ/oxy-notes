@@ -23,6 +23,8 @@ interface NotesState {
   createNote: (noteData: { title: string; content: string; color?: string }, oxyServices?: OxyServices, activeSessionId?: string) => Promise<StoredNote>;
   updateNote: (localId: string, noteData: { title: string; content: string; color?: string }, oxyServices?: OxyServices, activeSessionId?: string) => Promise<StoredNote>;
   deleteNote: (localId: string, oxyServices?: OxyServices, activeSessionId?: string) => Promise<void>;
+  archiveNote: (localId: string, oxyServices?: OxyServices, activeSessionId?: string) => Promise<StoredNote>;
+  unarchiveNote: (localId: string, oxyServices?: OxyServices, activeSessionId?: string) => Promise<StoredNote>;
   getNoteById: (localId: string) => Promise<StoredNote | null>;
   syncNotes: (oxyServices?: OxyServices, activeSessionId?: string) => Promise<void>;
   forceSyncNote: (localId: string, oxyServices: OxyServices, activeSessionId: string) => Promise<void>;
@@ -99,6 +101,30 @@ export const useNotesStore = create<NotesState>((set, get) => ({
       await get().loadNotes(); // Refresh the list
     } catch (error) {
       console.error('Error deleting note:', error);
+      throw error;
+    }
+  },
+
+  // Archive note
+  archiveNote: async (localId, oxyServices, activeSessionId) => {
+    try {
+      const archivedNote = await syncManager.archiveNote(localId, oxyServices, activeSessionId);
+      await get().loadNotes(); // Refresh the list
+      return archivedNote;
+    } catch (error) {
+      console.error('Error archiving note:', error);
+      throw error;
+    }
+  },
+
+  // Unarchive note
+  unarchiveNote: async (localId, oxyServices, activeSessionId) => {
+    try {
+      const unarchivedNote = await syncManager.unarchiveNote(localId, oxyServices, activeSessionId);
+      await get().loadNotes(); // Refresh the list
+      return unarchivedNote;
+    } catch (error) {
+      console.error('Error unarchiving note:', error);
       throw error;
     }
   },

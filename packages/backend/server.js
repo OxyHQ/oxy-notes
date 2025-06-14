@@ -148,6 +148,7 @@ app.post('/api/notes', async (req, res) => {
       title: title || '',
       content: content || '',
       color: color,
+      archived: false,
       userId: userId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -242,6 +243,78 @@ app.delete('/api/notes/:id', async (req, res) => {
   }
 });
 
+// Archive a note
+app.patch('/api/notes/:id/archive', async (req, res) => {
+  try {
+    const noteId = req.params.id;
+    const userId = req.user.id || req.user._id;
+    
+    const noteIndex = notes.findIndex(n => n.id === noteId && n.userId === userId);
+    
+    if (noteIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: 'Note not found'
+      });
+    }
+    
+    // Archive the note
+    notes[noteIndex] = {
+      ...notes[noteIndex],
+      archived: true,
+      updatedAt: new Date().toISOString()
+    };
+    
+    res.json({
+      success: true,
+      note: notes[noteIndex],
+      message: 'Note archived successfully'
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to archive note', 
+      details: error.message 
+    });
+  }
+});
+
+// Unarchive a note
+app.patch('/api/notes/:id/unarchive', async (req, res) => {
+  try {
+    const noteId = req.params.id;
+    const userId = req.user.id || req.user._id;
+    
+    const noteIndex = notes.findIndex(n => n.id === noteId && n.userId === userId);
+    
+    if (noteIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: 'Note not found'
+      });
+    }
+    
+    // Unarchive the note
+    notes[noteIndex] = {
+      ...notes[noteIndex],
+      archived: false,
+      updatedAt: new Date().toISOString()
+    };
+    
+    res.json({
+      success: true,
+      note: notes[noteIndex],
+      message: 'Note unarchived successfully'
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to unarchive note', 
+      details: error.message 
+    });
+  }
+});
+
 app.listen(4000, () => {
   console.log('🚀 Oxy Backend running on port 4000');
   console.log('Features: JWT Authentication with OxyServices');
@@ -254,4 +327,6 @@ app.listen(4000, () => {
   console.log('  POST /api/notes - Create note (authenticated)');
   console.log('  PUT  /api/notes/:id - Update note (authenticated)');
   console.log('  DELETE /api/notes/:id - Delete note (authenticated)');
+  console.log('  PATCH /api/notes/:id/archive - Archive note (authenticated)');
+  console.log('  PATCH /api/notes/:id/unarchive - Unarchive note (authenticated)');
 });
