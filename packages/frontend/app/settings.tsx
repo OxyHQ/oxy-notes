@@ -99,7 +99,7 @@ export default function SettingsScreen() {
 
   const getCurrentLanguageName = () => {
     const current = availableLanguages.find(lang => lang.code === i18n.language);
-    return current ? current.name : 'English (US)';
+    return current ? current.name : t('common.defaultLanguageName');
   };
 
   if (!user) {
