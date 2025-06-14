@@ -223,7 +223,7 @@ class SyncManager {
       ...existingNote,
       archived: true,
       lastModified: Date.now(),
-      syncStatus: this.isOnline ? 'pending' : 'pending',
+      syncStatus: 'pending',
     };
 
     await storageManager.saveNote(updatedNote);
