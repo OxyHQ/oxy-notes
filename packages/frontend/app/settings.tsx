@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import ExportNotesModal from '../ui/components/ExportNotesModal';
 
 export default function SettingsScreen() {
   const { user } = useOxy();
-  const { notes } = useNotesStore();
+  const { notes, loadNotes } = useNotesStore();
   
   // Settings state
   const [notifications, setNotifications] = useState(true);
@@ -25,6 +25,12 @@ export default function SettingsScreen() {
   const [autoSync, setAutoSync] = useState(true);
   const [offlineMode, setOfflineMode] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+
+  // Load notes when component mounts
+  useEffect(() => {
+    console.log('Settings screen mounted, loading notes...');
+    loadNotes();
+  }, [loadNotes]);
 
   const handleSignOut = () => {
     Alert.alert(
@@ -69,6 +75,10 @@ export default function SettingsScreen() {
   };
 
   const handleExportData = () => {
+    console.log('Export button pressed');
+    console.log('Notes count:', notes.length);
+    console.log('showExportModal state:', showExportModal);
+    
     if (notes.length === 0) {
       Alert.alert(
         'No Notes to Export',
@@ -78,6 +88,7 @@ export default function SettingsScreen() {
       return;
     }
 
+    console.log('Setting showExportModal to true');
     setShowExportModal(true);
   };
 
@@ -457,6 +468,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f2f2f2',
   },
   header: {
     paddingHorizontal: 20,
@@ -473,7 +485,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 16,
+    padding: 16,
   },
   userIcon: {
     width: 40,

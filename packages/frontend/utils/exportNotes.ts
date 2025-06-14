@@ -1,5 +1,6 @@
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { Platform } from 'react-native';
 import { StoredNote } from './storage';
 
 export type ExportFormat = 'json' | 'csv' | 'txt' | 'markdown';
@@ -59,23 +60,30 @@ export class NotesExporter {
           throw new Error(`Unsupported export format: ${options.format}`);
       }
 
-      // Create file and share
-      const fileUri = FileSystem.documentDirectory + fileName;
-      await FileSystem.writeAsStringAsync(fileUri, content, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
-
-      // Share the file
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(fileUri, {
-          mimeType,
-          dialogTitle: 'Export Notes',
-        });
+      // Create file and share based on platform
+      if (Platform.OS === 'web') {
+        // Web platform - use browser download
+        this.downloadFileOnWeb(content, fileName, mimeType);
+        return fileName; // Return filename for web
       } else {
-        throw new Error('Sharing is not available on this device');
-      }
+        // Native platforms - use Expo FileSystem and Sharing
+        const fileUri = FileSystem.documentDirectory + fileName;
+        await FileSystem.writeAsStringAsync(fileUri, content, {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
 
-      return fileUri;
+        // Share the file
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(fileUri, {
+            mimeType,
+            dialogTitle: 'Export Notes',
+          });
+        } else {
+          throw new Error('Sharing is not available on this device');
+        }
+
+        return fileUri;
+      }
     } catch (error) {
       console.error('Error exporting notes:', error);
       throw error;
@@ -275,5 +283,40 @@ export class NotesExporter {
       syncedCount: notes.filter(n => n.syncStatus === 'synced').length,
       pendingCount: notes.filter(n => n.syncStatus === 'pending').length,
     };
+  }
+
+  /**
+   * Download file on web platform using browser download
+   */
+  private static downloadFileOnWeb(content: string, fileName: string, mimeType: string): void {
+    try {
+      // Check if we're in a browser environment
+      if (typeof window === 'undefined' || typeof document === 'undefined') {
+        throw new Error('Web download not available in this environment');
+      }
+
+      // Create blob with the content
+      const blob = new Blob([content], { type: mimeType });
+      
+      // Create download URL
+      const url = URL.createObjectURL(blob);
+      
+      // Create temporary anchor element for download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.style.display = 'none';
+      
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the URL
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading file on web:', error);
+      throw new Error('Failed to download file on web platform');
+    }
   }
 }

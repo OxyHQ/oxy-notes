@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, Dimensions } from 'react-native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Slot, usePathname, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { OxyProvider, OxyServices } from '@oxyhq/services';
 import BottomNavigation from '../ui/components/navigation/BottomNavigation';
+import NotesScreen from './index';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -15,11 +16,16 @@ SplashScreen.preventAutoHideAsync();
 const TABLET_BREAKPOINT = 768;
 
 export default function RootLayout() {
+  const pathname = usePathname();
+  
   // Get initial dimensions only once
   const [isLargeScreen, setIsLargeScreen] = useState(() => {
     const { width } = Dimensions.get('window');
     return width >= TABLET_BREAKPOINT;
   });
+  
+  // Check if we're on an edit route
+  const isEditRoute = pathname?.includes('/edit-note');
   
   // Only for web: add resize listener for responsive layout
   useEffect(() => {
@@ -73,33 +79,24 @@ export default function RootLayout() {
                 <BottomNavigation orientation="vertical" />
               </View>
               <View style={styles.webContent}>
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                  }}
-                >
-                  <Stack.Screen name="index" />
-                  <Stack.Screen name="create-note" />
-                  <Stack.Screen name="edit-note" />
-                  <Stack.Screen name="search" />
-                  <Stack.Screen name="profile" />
-                </Stack>
+                {isEditRoute ? (
+                  <View style={styles.splitContainer}>
+                    <View style={styles.mainPanel}>
+                      <NotesScreen />
+                    </View>
+                    <View style={styles.editPanel}>
+                      <Slot />
+                    </View>
+                  </View>
+                ) : (
+                  <Slot />
+                )}
               </View>
             </View>
           ) : (
             <>
               <View style={styles.content}>
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                  }}
-                >
-                  <Stack.Screen name="index" />
-                  <Stack.Screen name="create-note" />
-                  <Stack.Screen name="edit-note" />
-                  <Stack.Screen name="search" />
-                  <Stack.Screen name="profile" />
-                </Stack>
+                <Slot />
               </View>
               <BottomNavigation />
             </>
@@ -114,7 +111,6 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   content: {
     flex: 1,
@@ -129,5 +125,18 @@ const styles = StyleSheet.create({
   webContent: {
     flex: 1,
     width: '100%',
+  },
+  splitContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  mainPanel: {
+    flex: 1,
+    borderRightWidth: 1,
+    borderRightColor: '#e0e0e0',
+  },
+  editPanel: {
+    flex: 1,
+    backgroundColor: '#fafafa',
   },
 });

@@ -9,6 +9,7 @@ import {
   Alert,
   Switch,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NotesExporter, ExportFormat } from '../../utils/exportNotes';
@@ -62,6 +63,15 @@ export default function ExportNotesModal({ visible, onClose, notes }: ExportNote
 
   const stats = NotesExporter.getExportStats(notes);
 
+  // Debug logging
+  console.log('ExportNotesModal props:', { visible, notes: notes.length });
+  
+  React.useEffect(() => {
+    if (visible) {
+      console.log('Export modal is now visible with', notes.length, 'notes');
+    }
+  }, [visible, notes.length]);
+
   const handleExport = async () => {
     try {
       setIsExporting(true);
@@ -72,9 +82,13 @@ export default function ExportNotesModal({ visible, onClose, notes }: ExportNote
         includeMetadata,
       });
 
+      const message = Platform.OS === 'web' 
+        ? 'Your notes have been downloaded to your device.'
+        : 'Your notes have been exported successfully. You can now share or save the file.';
+
       Alert.alert(
         'Export Complete',
-        'Your notes have been exported successfully. You can now share or save the file.',
+        message,
         [{ text: 'OK', onPress: onClose }]
       );
     } catch (error) {

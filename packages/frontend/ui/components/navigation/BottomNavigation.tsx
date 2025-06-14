@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -26,12 +26,6 @@ const tabs: TabItem[] = [
     path: '/search',
     icon: 'search',
     label: 'Search',
-  },
-  {
-    name: 'create',
-    path: '/create-note',
-    icon: 'add-circle',
-    label: 'Create',
   },
   {
     name: 'settings',
@@ -93,6 +87,36 @@ export default function BottomNavigation({ orientation = 'horizontal' }: BottomN
           </Text>
         </TouchableOpacity>
       ))}
+      <TouchableOpacity
+          key={'create-note'}
+          style={[
+            styles.tab,
+            { backgroundColor: '#ffc107', borderRadius: 35, padding: 4 },
+            isActive('/create-note') && { opacity: 0.8 },
+            orientation === 'vertical' ? styles.verticalTab : styles.horizontalTab,
+          ]}
+          onPress={() => handleTabPress('/create-note')}
+          activeOpacity={0.7}
+        >
+          {(() => {
+            const IconComponent = Ionicons as any;
+            return (
+              <IconComponent
+                name={'add-circle'}
+                size={45}
+                color={isActive('/create-note') ? '#fff' : '#fff'}
+              />
+            );
+          })()}
+            {orientation === 'vertical' && (
+            <Text style={[
+              {color: '#fff', fontSize: 12, fontWeight: '500'},
+              orientation === 'vertical' ? styles.verticalLabel : {},
+            ]}>
+              {'New Note'}
+            </Text>
+            )}
+        </TouchableOpacity>
     </View>
   );
 }
@@ -108,11 +132,21 @@ const styles = StyleSheet.create({
   horizontalContainer: {
     flexDirection: 'row',
     padding: 8,
+    ...(Platform.OS === 'web'
+      ? {
+          position: 'fixed' as any,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+        }
+      : {}),
   },
   verticalContainer: {
     flexDirection: 'column',
     paddingVertical: 20,
     flex: 1,
+    marginRight: 0,
   },
   tab: {
     alignItems: 'center',
