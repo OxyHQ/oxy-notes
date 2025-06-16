@@ -10,16 +10,21 @@
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
     "frontend": "cd packages/frontend && npm run start --tunnel --reset-cache",
     "backend": "cd packages/backend && npm run dev",
+    
+    "build": "npm run build --workspaces --if-present",
+    "build:web": "cd packages/frontend && npm run build-web",
     "build:frontend": "cd packages/frontend && npm run build-web",
     "build:backend": "cd packages/backend && npm run build",
+    
+    "lint": "npm run lint --workspaces --if-present",
     "lint:frontend": "cd packages/frontend && npm run lint",
     "lint:backend": "cd packages/backend && npm run lint",
+    
     "install:all": "npm install && npm run install:frontend && npm run install:backend",
     "install:frontend": "cd packages/frontend && npm install",
     "install:backend": "cd packages/backend && npm install",
-    "clean": "npm run clean --workspaces",
-    "lint": "npm run lint --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present"
+    
+    "clean": "npm run clean --workspaces"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
