@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { OxyServices } = require('@oxyhq/services/core');
+const { version } = require('./package.json');
 
 // Initialize OxyServices with your Oxy API URL
 const isProduction = process.env.NODE_ENV === 'production';
@@ -29,7 +30,7 @@ app.get('/', (req, res) => {
     message: 'Welcome to the Oxy Notes API',
     status: 'ok',
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version
   });
 });
 
