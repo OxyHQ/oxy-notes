@@ -20,9 +20,18 @@ app.use(bodyParser.json());
 const authenticateToken = oxyServices.createAuthenticateTokenMiddleware({  
   loadFullUser: true,  
   onError: (error) => {  
-    console.error('Auth error:', error);  
+    console.error('Auth error:', error);
   }  
-});  
+});
+
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Welcome to the Oxy Notes API',
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
+});
 
 // Health check endpoint (unauthenticated)
 app.get('/api/health', (req, res) => {
