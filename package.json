@@ -14,7 +14,7 @@
     "build": "npm run build --workspaces --if-present",
     "build:web": "cd packages/frontend && npm run build-web:prod",
     "build:web:dev": "cd packages/frontend && npm run build-web",
-    "build:frontend": "cd packages/frontend && npm run build-web",
+    "build:frontend": "cd packages/frontend && npm run build-web:prod",
     "build:backend": "cd packages/backend && npm run build",
     
     "lint": "npm run lint --workspaces --if-present",
