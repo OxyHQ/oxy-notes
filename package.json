@@ -12,7 +12,8 @@
     "backend": "cd packages/backend && npm run dev",
     
     "build": "npm run build --workspaces --if-present",
-    "build:web": "cd packages/frontend && npm run build-web",
+    "build:web": "cd packages/frontend && npm run build-web:prod",
+    "build:web:dev": "cd packages/frontend && npm run build-web",
     "build:frontend": "cd packages/frontend && npm run build-web",
     "build:backend": "cd packages/backend && npm run build",
     
