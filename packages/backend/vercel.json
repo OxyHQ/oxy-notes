@@ -15,7 +15,6 @@
   ],
   "installCommand": "npm install",
   "buildCommand": "cd packages/backend && npm install",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- packages/backend/",
   "env": {
     "NODE_ENV": "production"
   }
