@@ -1,0 +1,22 @@
+{
+  "name": "oxy-notes-backend",
+  "version": 2,
+  "builds": [
+    {
+      "src": "packages/backend/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "packages/backend/server.js"
+    }
+  ],
+  "installCommand": "npm install",
+  "buildCommand": "cd packages/backend && npm install",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- packages/backend/",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
