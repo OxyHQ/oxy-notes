@@ -4,8 +4,11 @@ const bodyParser = require('body-parser');
 const { OxyServices } = require('@oxyhq/services/core');
 
 // Initialize OxyServices with your Oxy API URL
+const isProduction = process.env.NODE_ENV === 'production';
 const oxyServices = new OxyServices({
-  baseURL: 'https://api.oxy.so', // Replace with your Oxy API URL
+  baseURL: isProduction
+    ? process.env.OXY_API_URL || 'https://api.oxy.so' // Use your prod API URL
+    : 'http://localhost:3001/', // Dev API URL
 });
 
 // Express setup

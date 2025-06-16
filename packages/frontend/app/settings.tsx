@@ -13,13 +13,14 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useTranslation } from 'react-i18next';
-import { useNotesStore } from '../stores/notesStore';
-import ExportNotesModal from '../ui/components/ExportNotesModal';
-import LanguageSelectionModal from '../ui/components/LanguageSelectionModal';
-import { availableLanguages } from '../i18n';
+import { useNotesStore } from '@/stores/notesStore';
+import ExportNotesModal from '@/ui/components/ExportNotesModal';
+import LanguageSelectionModal from '@/ui/components/LanguageSelectionModal';
+import { availableLanguages } from '@/i18n';
+import { LogoIcon } from "@/assets/logo";
 
 export default function SettingsScreen() {
-  const { user } = useOxy();
+  const { user, showBottomSheet } = useOxy();
   const { notes, loadNotes } = useNotesStore();
   const { t, i18n } = useTranslation();
   
@@ -140,10 +141,7 @@ export default function SettingsScreen() {
           
           <TouchableOpacity 
             style={[styles.settingItem, styles.firstSettingItem, styles.lastSettingItem]}
-            onPress={() => {
-              // Future: Navigate to account management screen
-              Alert.alert(t('settings.sections.account'), t('settings.account.manageAccount'));
-            }}
+            onPress={() => showBottomSheet?.('AccountSettings')}
           >
             <View style={styles.userIcon}>
               <Ionicons name="person" size={24} color="#fff" />
@@ -151,9 +149,9 @@ export default function SettingsScreen() {
             <View style={styles.settingInfo}>
               <View>
                 <Text style={styles.settingLabel}>
-                  {typeof user.name === 'string' ? user.name : user.name?.full || user.name?.first || 'User'}
+                  {typeof user.name === 'string' ? user.name : user.name?.full || user.name?.first || user.username}
                 </Text>
-                <Text style={styles.settingDescription}>{user.email}</Text>
+                <Text style={styles.settingDescription}>{user.username}</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
@@ -167,7 +165,7 @@ export default function SettingsScreen() {
           {/* App Title and Version */}
           <View style={[styles.settingItem, styles.firstSettingItem]}>
             <View style={styles.settingInfo}>
-              <Ionicons name="document-text" size={20} color="#ffc107" style={styles.settingIcon} />
+              <LogoIcon size={24} color="#ffc107" style={styles.settingIcon} />
               <View>
                 <Text style={styles.settingLabel}>{t('settings.aboutNoted.appName')}</Text>
                 <Text style={styles.settingDescription}>

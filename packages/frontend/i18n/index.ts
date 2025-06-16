@@ -1,6 +1,5 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Import translations
 import enUS from './locales/en-US.json';
@@ -21,17 +20,56 @@ const resources = {
   'zh-CN': { translation: zhCN },
 };
 
-// Custom language detector for React Native
+// Check if we're in a React Native environment
+const isReactNative = () => {
+  return typeof global !== 'undefined' && 
+         global.navigator && 
+         global.navigator.product === 'ReactNative';
+};
+
+// Check if we're in a browser environment
+const isBrowser = () => {
+  return typeof window !== 'undefined';
+};
+
+// Async function to get AsyncStorage safely
+const getAsyncStorage = async () => {
+  if (isReactNative()) {
+    try {
+      const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+      return AsyncStorage;
+    } catch (error) {
+      console.warn('AsyncStorage not available:', error);
+      return null;
+    }
+  }
+  return null;
+};
+
+// Custom language detector that works across environments
 const languageDetector = {
   type: 'languageDetector' as const,
   async: true,
   detect: async (callback: (lng: string) => void) => {
     try {
-      // Try to get saved language from AsyncStorage
-      const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
-      if (savedLanguage) {
-        callback(savedLanguage);
-        return;
+      // Try to get saved language from AsyncStorage in React Native
+      if (isReactNative()) {
+        const AsyncStorage = await getAsyncStorage();
+        if (AsyncStorage) {
+          const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+          if (savedLanguage) {
+            callback(savedLanguage);
+            return;
+          }
+        }
+      }
+      // Try to get saved language from localStorage in browser
+      else if (isBrowser() && typeof localStorage !== 'undefined') {
+        const savedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+        if (savedLanguage) {
+          callback(savedLanguage);
+          return;
+        }
       }
     } catch (error) {
       console.warn('Error loading saved language:', error);
@@ -43,7 +81,17 @@ const languageDetector = {
   init: () => {},
   cacheUserLanguage: async (lng: string) => {
     try {
-      await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, lng);
+      // Save to AsyncStorage in React Native
+      if (isReactNative()) {
+        const AsyncStorage = await getAsyncStorage();
+        if (AsyncStorage) {
+          await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, lng);
+        }
+      }
+      // Save to localStorage in browser
+      else if (isBrowser() && typeof localStorage !== 'undefined') {
+        localStorage.setItem(LANGUAGE_STORAGE_KEY, lng);
+      }
     } catch (error) {
       console.warn('Error saving language preference:', error);
     }
@@ -56,7 +104,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'en-US',
-    debug: __DEV__,
+    debug: typeof __DEV__ !== 'undefined' ? __DEV__ : process.env.NODE_ENV === 'development',
     
     interpolation: {
       escapeValue: false, // React already escapes values

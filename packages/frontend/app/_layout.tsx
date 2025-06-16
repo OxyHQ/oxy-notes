@@ -62,8 +62,11 @@ export default function RootLayout() {
   }
 
   // Initialize OxyServices
+  const isProduction = process.env.NODE_ENV === 'production';
   const oxyServices = new OxyServices({
-    baseURL: 'https://api.oxy.so',
+    baseURL: isProduction
+    ? process.env.OXY_API_URL || 'https://api.oxy.so' // Use your prod API URL
+    : 'http://localhost:3001/', // Dev API URL
   });
 
   return (
@@ -133,11 +136,12 @@ const styles = StyleSheet.create({
   },
   mainPanel: {
     flex: 1,
-    borderRightWidth: 1,
-    borderRightColor: '#e0e0e0',
   },
   editPanel: {
     flex: 1,
-    backgroundColor: '#fafafa',
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    overflow: 'hidden',
   },
 });

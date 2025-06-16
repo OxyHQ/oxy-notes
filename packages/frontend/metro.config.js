@@ -10,7 +10,7 @@ const config = getDefaultConfig(projectRoot);
 // 1. Watch all files within the monorepo
 config.watchFolders = [
   workspaceRoot,
-  path.resolve(require('os').homedir(), 'OxyServicesandApi', 'OxyHQServices'),
+  path.resolve(require('os').homedir(), 'OxyStackApiANDModule', 'OxyHQServices'),
 ];
 
 // 2. Let Metro know where to resolve packages and in what order
@@ -24,10 +24,10 @@ config.resolver.disableHierarchicalLookup = true;
 
 // 4. Extra module resolution for local packages
 config.resolver.extraNodeModules = {
-  '@oxyhq/services': path.resolve(require('os').homedir(), 'OxyServicesandApi', 'OxyHQServices', 'src', 'index.ts'),
-  '@oxyhq/services/core': path.resolve(require('os').homedir(), 'OxyServicesandApi', 'OxyHQServices', 'src', 'core'),
-  '@oxyhq/services/full': path.resolve(require('os').homedir(), 'OxyServicesandApi', 'OxyHQServices', 'src', 'index.ts'),
-  '@oxyhq/services/ui': path.resolve(require('os').homedir(), 'OxyServicesandApi', 'OxyHQServices', 'src', 'ui'),
+  '@oxyhq/services': path.resolve(require('os').homedir(), 'OxyStackApiANDModule', 'OxyHQServices', 'src', 'index.ts'),
+  '@oxyhq/services/core': path.resolve(require('os').homedir(), 'OxyStackApiANDModule', 'OxyHQServices', 'src', 'core'),
+  '@oxyhq/services/full': path.resolve(require('os').homedir(), 'OxyStackApiANDModule', 'OxyHQServices', 'src', 'index.ts'),
+  '@oxyhq/services/ui': path.resolve(require('os').homedir(), 'OxyStackApiANDModule', 'OxyHQServices', 'src', 'ui'),
 };
 
 // 5. Enable better platform resolution
