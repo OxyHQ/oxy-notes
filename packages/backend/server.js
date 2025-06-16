@@ -28,8 +28,6 @@ const authenticateToken = oxyServices.createAuthenticateTokenMiddleware({
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the Oxy Notes API',
-    status: 'ok',
-    timestamp: new Date().toISOString(),
     version
   });
 });
@@ -39,7 +37,9 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
-    version: '1.0.0',
+    version,
+    environment: process.env.NODE_ENV || 'development',
+    apiUrl: isProduction ? process.env.OXY_API_URL : 'http://localhost:3001/',
     features: ['device-based-auth', 'session-isolation', 'multi-user-support']
   });
 });
