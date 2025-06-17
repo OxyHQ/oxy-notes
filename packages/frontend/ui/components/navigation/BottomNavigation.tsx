@@ -126,14 +126,15 @@ export default function BottomNavigation({ orientation = 'horizontal' }: BottomN
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    borderRadius: 35,
-    margin: 6,
-    borderWidth: 1,
     borderColor: '#e0e0e0',
   },
   horizontalContainer: {
     flexDirection: 'row',
+    borderWidth: 1,
+    margin: 6,
     padding: 8,
+    borderRadius: 35,
+    gap: 8,
     ...(Platform.OS === 'web'
       ? {
           position: 'fixed' as any,
@@ -146,9 +147,12 @@ const styles = StyleSheet.create({
   },
   verticalContainer: {
     flexDirection: 'column',
-    paddingVertical: 20,
+    padding: 8,
     flex: 1,
-    marginRight: 0,
+    borderRightWidth: 1,
+    borderTopWidth: 1,
+    marginTop: 10,
+    borderTopRightRadius: 35,
   },
   tab: {
     alignItems: 'center',
@@ -164,7 +168,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginVertical: 4,
-    marginHorizontal: 8,
   },
   activeTab: {
     backgroundColor: 'rgba(255, 193, 7, 0.1)',
@@ -173,7 +176,6 @@ const styles = StyleSheet.create({
   verticalActiveTab: {
     backgroundColor: 'rgba(255, 193, 7, 0.1)',
     borderRadius: 12,
-    width: '90%',
   },
   label: {
     fontSize: 12,
