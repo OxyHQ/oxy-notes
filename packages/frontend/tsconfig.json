@@ -12,19 +12,19 @@
         "./*"
       ],
       "@oxyhq/services": [
-        "../../../OxyStackApiANDModule/OxyHQServices/src"
+        "../../../OxyStackApiANDModule/OxyHQServices/packages/services/src"
       ],
       "@oxyhq/services/*": [
-        "../../../OxyStackApiANDModule/OxyHQServices/src/*"
+        "../../../OxyStackApiANDModule/OxyHQServices/packages/services/src/*"
       ],
       "@oxyhq/services/core": [
-        "../../../OxyStackApiANDModule/OxyHQServices/src/core"
+        "../../../OxyStackApiANDModule/OxyHQServices/packages/services/src/core"
       ],
       "@oxyhq/services/full": [
-        "../../../OxyStackApiANDModule/OxyHQServices/src"
+        "../../../OxyStackApiANDModule/OxyHQServices/packages/services/src"
       ],
       "@oxyhq/services/ui": [
-        "../../../OxyStackApiANDModule/OxyHQServices/src/ui"
+        "../../../OxyStackApiANDModule/OxyHQServices/packages/services/src/ui"
       ]
     }
   },
@@ -33,8 +33,8 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "../../../OxyStackApiANDModule/OxyHQServices/src/**/*.ts",
-    "../../../OxyStackApiANDModule/OxyHQServices/src/**/*.tsx"
+    "../../../OxyStackApiANDModule/OxyHQServices/packages/services/src/**/*.ts",
+    "../../../OxyStackApiANDModule/OxyHQServices/packages/services/src/**/*.tsx"
   ],
   "extends": "expo/tsconfig.base"
 }

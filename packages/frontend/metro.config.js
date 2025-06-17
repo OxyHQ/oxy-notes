@@ -9,7 +9,7 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 const config = getDefaultConfig(projectRoot);
 
 // Check if OxyHQ services exists locally (for development)
-const oxyServicesPath = path.resolve(require('os').homedir(), 'OxyStackApiANDModule', 'OxyHQServices');
+const oxyServicesPath = path.resolve(require('os').homedir(), 'OxyStackApiANDModule', 'OxyHQServices', 'packages', 'services');
 const hasLocalOxyServices = fs.existsSync(oxyServicesPath);
 
 // 1. Watch all files within the monorepo
