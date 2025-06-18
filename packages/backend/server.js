@@ -9,7 +9,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const oxyServices = new OxyServices({
   baseURL: isProduction
     ? process.env.OXY_API_URL || 'https://api.oxy.so' // Use your prod API URL
-    : 'http://localhost:3001/', // Dev API URL
+    : 'http://localhost:3001', // Dev API URL
 });
 
 // Express setup
@@ -39,7 +39,7 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     version,
     environment: process.env.NODE_ENV || 'development',
-    apiUrl: isProduction ? process.env.OXY_API_URL : 'http://localhost:3001/',
+    apiUrl: isProduction ? process.env.OXY_API_URL : 'http://localhost:3001',
     features: ['device-based-auth', 'session-isolation', 'multi-user-support']
   });
 });

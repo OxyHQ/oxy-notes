@@ -10,21 +10,17 @@
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
     "frontend": "cd packages/frontend && npm run start --tunnel --reset-cache",
     "backend": "cd packages/backend && npm run dev",
-    
     "build": "npm run build --workspaces --if-present",
     "build:web": "cd packages/frontend && npm run build-web:prod",
     "build:web:dev": "cd packages/frontend && npm run build-web",
     "build:frontend": "cd packages/frontend && npm run build-web:prod",
     "build:backend": "cd packages/backend && npm run build",
-    
     "lint": "npm run lint --workspaces --if-present",
     "lint:frontend": "cd packages/frontend && npm run lint",
     "lint:backend": "cd packages/backend && npm run lint",
-    
     "install:all": "npm install && npm run install:frontend && npm run install:backend",
     "install:frontend": "cd packages/frontend && npm install",
     "install:backend": "cd packages/backend && npm install",
-    
     "clean": "npm run clean --workspaces"
   },
   "devDependencies": {
@@ -35,5 +31,8 @@
     "npm": ">=8.0.0"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9"
+  }
 }

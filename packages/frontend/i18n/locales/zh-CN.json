@@ -21,6 +21,7 @@
       "buildVersion": "开发版",
       "platform": "平台",
       "expoSDK": "Expo SDK",
+      "oxySDK": "Oxy SDK",
       "notesCount": "您的笔记",
       "notesCountDesc": "已创建 {{count}} 条笔记"
     },

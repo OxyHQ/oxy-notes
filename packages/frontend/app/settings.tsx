@@ -203,6 +203,27 @@ export default function SettingsScreen() {
             </View>
           </View>
 
+          {/* Oxy SDK */}
+          <TouchableOpacity style={styles.settingItem} onPress={() => showBottomSheet?.('AppInfo')}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="code-slash" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>{t('settings.aboutNoted.oxySDK')}</Text>
+                <Text style={styles.settingDescription}>{Constants.oxyVersion || 'Unknown'}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.settingItem} onPress={() => showBottomSheet?.('FileManagement')}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="code-slash" size={20} color="#666" style={styles.settingIcon} />
+              <View>
+                <Text style={styles.settingLabel}>{t('settings.aboutNoted.oxySDK')}</Text>
+                <Text style={styles.settingDescription}>{Constants.oxyVersion || 'Unknown'}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+
           {/* Expo SDK */}
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>

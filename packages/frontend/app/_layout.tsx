@@ -66,7 +66,7 @@ export default function RootLayout() {
   const oxyServices = new OxyServices({
     baseURL: isProduction
     ? process.env.OXY_API_URL || 'https://api.oxy.so' // Use your prod API URL
-    : 'http://localhost:3001/', // Dev API URL
+    : 'http://localhost:3001', // Dev API URL
   });
 
   return (

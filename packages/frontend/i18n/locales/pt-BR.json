@@ -21,6 +21,7 @@
       "buildVersion": "Desenvolvimento",
       "platform": "Plataforma",
       "expoSDK": "Expo SDK",
+      "oxySDK": "Oxy SDK",
       "notesCount": "Suas Notas",
       "notesCountDesc": "{{count}} notas criadas"
     },
