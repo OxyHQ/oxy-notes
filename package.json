@@ -24,6 +24,7 @@
     "clean": "npm run clean --workspaces"
   },
   "devDependencies": {
+    "@expo/cli": "^0.24.15",
     "concurrently": "^8.2.2"
   },
   "engines": {
