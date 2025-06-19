@@ -1,3 +1,7 @@
+{
+  "name": "oxy-noted-frontend",
+  "main": "expo-router/entry",
+  "version": "1.0.0",
   "scripts": {
     "start": "expo start --reset-cache --tunnel --clear",
     "reset-project": "node ./scripts/reset-project.js",
