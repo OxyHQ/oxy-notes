@@ -24,8 +24,6 @@
     "clean": "npm run clean --workspaces"
   },
   "devDependencies": {
-    "@babel/plugin-transform-export-namespace-from": "^7.27.1",
-    "@expo/cli": "^0.24.15",
     "concurrently": "^8.2.2"
   },
   "engines": {
@@ -35,6 +33,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/plugin-transform-export-namespace-from": "^7.18.9"
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9"
   }
 }
