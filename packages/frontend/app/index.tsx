@@ -18,6 +18,7 @@ import { useOfflineNotes } from '../ui/hooks/useOfflineNotes';
 import { StoredNote } from '../utils/storage';
 import MasonryGrid from '../ui/components/MasonryGrid';
 import NoteCard from '../ui/components/NoteCard';
+import { NOTE_COLORS } from '../types';
 
 export default function NotesScreen() {
   const { user } = useOxy();
@@ -35,13 +36,23 @@ export default function NotesScreen() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'masonry' | 'grid' | 'list'>('masonry');
+  const [archivedFilter, setArchivedFilter] = useState<'active' | 'archived' | 'all'>('active');
+  const [colorFilterIndex, setColorFilterIndex] = useState(0); // 0 means all colors
+  const colorFilter = colorFilterIndex === 0 ? null : NOTE_COLORS[colorFilterIndex - 1];
 
-  const filteredNotes = notes.filter(
-    (note) =>
-      !note.archived && // Exclude archived notes from main view
-      (note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      note.content.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredNotes = notes.filter((note) => {
+    const matchesArchived =
+      archivedFilter === 'all'
+        ? true
+        : archivedFilter === 'archived'
+          ? note.archived
+          : !note.archived;
+    const matchesColor = !colorFilter || note.color === colorFilter;
+    const matchesSearch =
+      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      note.content.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesArchived && matchesColor && matchesSearch;
+  });
 
   const handleDeleteNote = async (note: StoredNote) => {
     Alert.alert(
@@ -172,7 +183,7 @@ export default function NotesScreen() {
             >
               {(() => {
                 const IconComponent = Ionicons as any;
-                const iconName = viewMode === 'masonry' ? 'apps' : 
+                const iconName = viewMode === 'masonry' ? 'apps' :
                                viewMode === 'grid' ? 'grid' : 'list';
                 return (
                   <IconComponent
@@ -182,6 +193,35 @@ export default function NotesScreen() {
                   />
                 );
               })()}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.filterToggle}
+              onPress={() => {
+                const modes: ('active' | 'all' | 'archived')[] = ['active', 'all', 'archived'];
+                const current = modes.indexOf(archivedFilter);
+                const next = (current + 1) % modes.length;
+                setArchivedFilter(modes[next]);
+              }}
+            >
+              {(() => {
+                const IconComponent = Ionicons as any;
+                return (
+                  <IconComponent
+                    name="filter"
+                    size={20}
+                    color="#666"
+                  />
+                );
+              })()}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.colorToggle}
+              onPress={() => {
+                const nextIndex = (colorFilterIndex + 1) % (NOTE_COLORS.length + 1);
+                setColorFilterIndex(nextIndex);
+              }}
+            >
+              <View style={[styles.colorPreview, { backgroundColor: colorFilter || 'transparent' }]} />
             </TouchableOpacity>
           </View>
         </View>
@@ -422,6 +462,19 @@ const styles = StyleSheet.create({
   },
   viewToggle: {
     padding: 4,
+  },
+  filterToggle: {
+    padding: 4,
+  },
+  colorToggle: {
+    padding: 4,
+  },
+  colorPreview: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#666',
   },
   viewToggleText: {
     fontSize: 20,
