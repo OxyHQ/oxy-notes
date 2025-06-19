@@ -1,9 +1,20 @@
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { OxyServices } from '@oxyhq/services';
 
 // API Configuration
+const API_BASE_URL =
+  (Constants.expoConfig?.extra as any)?.API_URL ||
+  process.env.EXPO_PUBLIC_API_URL ||
+  Platform.select({
+    web: 'http://localhost:4000',
+    android: 'http://10.0.2.2:4000',
+    ios: 'http://localhost:4000',
+    default: 'http://localhost:4000',
+  });
+
 const API_CONFIG = {
-  baseURL: Platform.OS === 'web' ? 'http://localhost:4000' : 'http://10.0.2.2:4000',
+  baseURL: API_BASE_URL,
   endpoints: {
     notes: '/api/notes',
     health: '/api/health',
