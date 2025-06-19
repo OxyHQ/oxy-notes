@@ -33,6 +33,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/plugin-proposal-export-namespace-from": "^7.18.9"
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
+    "sonner-native": "^0.21.0"
   }
 }
